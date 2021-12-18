@@ -1,0 +1,7 @@
+{
+  "appId": "com.classroom.app",
+  "appName": "Classroom App",
+  "bundledWebRuntime": false,
+  "npmClient": "yarn",
+  "webDir": "www"
+}
