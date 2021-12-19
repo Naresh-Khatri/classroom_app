@@ -1,33 +1,35 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
-      <q-toolbar>
-        <q-btn
-          v-if="$route.meta.showMenu"
-          flat
-          dense
-          round
-          icon="menu"
-          aria-label="Menu"
-          @click="leftDrawerOpen = !leftDrawerOpen"
-        /><q-btn
-          v-else
-          flat
-          dense
-          round
-          icon="arrow_back_ios"
-          aria-label="Menu"
-          to="/"
-        />
-
-        <q-toolbar-title class="text-bold">
-          <!-- Classroom App -->
+  <q-layout view="lHh Lpr lFf" class="relative">
+    <div class="top-left-btn">
+      <q-btn
+        v-if="$route.meta.showMenu"
+        class='absolute'
+        color="primary"
+        dense
+        flat
+        size="lg"
+        round
+        icon="menu"
+        aria-label="Menu"
+        @click="leftDrawerOpen = !leftDrawerOpen"
+      /><q-btn
+        v-else
+        class='absolute'
+        color="primary"
+        size="lg"
+        flat
+        dense
+        round
+        icon="arrow_back_ios"
+        aria-label="Menu"
+        to="/"
+      />
+    </div>
+    <!-- <q-toolbar-title class="text-bold">
           {{ $route.name }}
-        </q-toolbar-title>
+        </q-toolbar-title> -->
 
-        <!-- <div>Quasar v</div> -->
-      </q-toolbar>
-    </q-header>
+    <!-- <div>Quasar v</div> -->
 
     <q-drawer v-model="leftDrawerOpen" show-if-above>
       <!-- content-class="bg-grey-1" -->
@@ -36,7 +38,9 @@
           <q-icon
             size="100px"
             color="white"
-            :name="isLoggedIn ? 'account_circle' : 'person_off'"
+            style="border-radius: 50%"
+            rounded
+            :name="isLoggedIn ? 'img:' + userProfilePic : 'person_off'"
           />
           <div v-if="!isLoggedIn">
             <div class="text-h6 text-white">Unknown user</div>
@@ -50,12 +54,8 @@
           </div>
           <div v-else>
             <div>
-              <span class="text-h4 text-white"
-                >{{ $store.state.accountInfo.user.first_name }}
-              </span>
-              <span class="text-h6 text-white">{{
-                $store.state.accountInfo.user.last_name
-              }}</span>
+              <span class="text-h4 text-white">{{ firstName }} </span>
+              <span class="text-h6 text-white">{{ lastName }}</span>
             </div>
             <q-btn
               color="secondary"
@@ -102,6 +102,8 @@
 </template>
 
 <script>
+import { getAuth, signOut } from "firebase/auth";
+
 import EssentialLink from "components/EssentialLink.vue";
 import drawerLinksData from "../data/drawerLinksData.js";
 import { Plugins, statusBarStyle } from "@capacitor/core";
@@ -117,15 +119,21 @@ export default {
       leftDrawerOpen: false,
       essentialLinks: drawerLinksData,
       // accountInfo: this.$store.state.accountInfo,
-      userName:'',
-      userEmail:'',
-      userProfilePic:'',
+      userName: "",
+      userEmail: "",
+      userProfilePic: "",
       logoutDialog: false,
     };
   },
   computed: {
+    firstName() {
+      return this.userName.split(" ")[0];
+    },
+    lastName() {
+      return this.userName.split(" ")[1] || "";
+    },
     isLoggedIn() {
-      return !!this.$store.state.accountInfo;
+      return !!this.userName;
     },
     isStaff() {
       if (this.$store.state.accountInfo) {
@@ -143,7 +151,7 @@ export default {
     },
   },
   created() {
-    this.checkStorage()
+    this.checkStorage();
     // console.log(this.$q.platform.is.mobile);
     if (this.$q.platform.is.mobile)
       StatusBar.setBackgroundColor(this.$route.meta.statusBarStyle);
@@ -152,29 +160,41 @@ export default {
     //console.log(this.$store.getters.isLoggedIn);
   },
   methods: {
-    checkStorage(){
-      const user = this.$q.localStorage('loggedUser')
-      if(user){
-        this.userName = user.name
-        this.userEmail = user.email
-        this.userProfilePic = user.photoURL
+    checkStorage() {
+      const user = this.$q.localStorage.getItem("loggedUser");
+      if (user) {
+        console.log(user);
+        this.userName = user.name;
+        this.userEmail = user.email;
+        this.userProfilePic = user.photoURL;
       }
-    }
+    },
     refresh(done) {
       setTimeout(() => {
         done();
       }, 1000);
     },
     logout() {
-      localStorage.removeItem("accountInfo");
-      this.$store.state.accountInfo = {};
-      console.log(this.$store.state.accountInfo);
+      localStorage.removeItem("loggedUser");
+      // this.$store.state.accountInfo = {};
+      // console.log(this.$store.state.accountInfo);
       this.logoutDialog = false;
       this.$router.go();
-      // this.$q.notify({
-      //   type: "positive",
-      //   message: `Logged out Successfully!`
-      // });
+
+      const auth = getAuth();
+      signOut(auth)
+        .then(() => {
+          this.$q.notify({
+            type: "positive",
+            message: `Logged out Successfully!`,
+          });
+        })
+        .catch((error) => {
+          this.$q.notify({
+            type: "negatice",
+            message: `could not logout!`,
+          });
+        });
     },
   },
 };
@@ -209,7 +229,14 @@ export default {
   color: white;
   background: #8cc26b;
 }
-.q-drawer__content {
-  backdrop-filter: blur(10px);
+.q-drawer__content, .q-drawer__backdrop {
+  backdrop-filter: blur(2px);
+}
+.top-left-btn{
+  position: absolute;
+  color: white;
+  z-index: 10;
+  top: 25px;
+  left: 25px;
 }
 </style>

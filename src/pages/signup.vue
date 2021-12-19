@@ -125,7 +125,7 @@ export default {
           });
           //store userInfo obj in localstorage
           this.$q.localStorage.set('loggedUser', userInfo)
-
+          this.$router.push("/");
           //TODO: store userInfo obj in backend
         })
         .catch((error) => {
