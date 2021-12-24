@@ -90,48 +90,48 @@ export default {
   },
   methods: {
     refresh() {
-      axios
-        .get(meetings + "?date=" + new Date().toISOString().slice(0, 10))
-        .then((res) => {
-          this.meetingsList = res.data;
-        });
+      // axios
+      //   .get(meetings + "?date=" + new Date().toISOString().slice(0, 10))
+      //   .then((res) => {
+      //     this.meetingsList = res.data;
+      //   });
     },
     addNewMeeting() {
-      var date = this.date.replaceAll("/", "-");
-      var payload = {
-        date: date,
-        starting_at: this.startingAt,
-        ending_at: this.endignAt,
-        subject: this.subject,
-        topic: this.topic,
-        link: this.link,
-        instructor: 2,
-      };
-      var config = {
-        method: "post",
-        url: meetings,
-        headers: {
-          Authorization: `Bearer ${this.$store.state.accountInfo.access_token}`,
-        },
-        data: payload,
-      };
-      axios(config)
-        .then(() => {
-          this.refresh();
-          //this.$router.go();
-          this.$q.notify({
-            type: "positive",
-            message: `Meeting added!`,
-          });
-        })
-        .catch((err) => {
-          console.log(err);
-          this.$q.notify({
-            type: "negative",
-            message: `Something went wrong. Try again later!`,
-          });
-        });
-      console.log(payload);
+      // var date = this.date.replaceAll("/", "-");
+      // var payload = {
+      //   date: date,
+      //   starting_at: this.startingAt,
+      //   ending_at: this.endignAt,
+      //   subject: this.subject,
+      //   topic: this.topic,
+      //   link: this.link,
+      //   instructor: 2,
+      // };
+      // var config = {
+      //   method: "post",
+      //   url: meetings,
+      //   headers: {
+      //     Authorization: `Bearer ${this.$store.state.accountInfo.access_token}`,
+      //   },
+      //   data: payload,
+      // };
+      // axios(config)
+      //   .then(() => {
+      //     this.refresh();
+      //     //this.$router.go();
+      //     this.$q.notify({
+      //       type: "positive",
+      //       message: `Meeting added!`,
+      //     });
+      //   })
+      //   .catch((err) => {
+      //     console.log(err);
+      //     this.$q.notify({
+      //       type: "negative",
+      //       message: `Something went wrong. Try again later!`,
+      //     });
+      //   });
+      // console.log(payload);
     },
     showDetails(index) {
       this.meetingDetailsDialog = true;
@@ -160,22 +160,22 @@ export default {
           Authorization: `Bearer ${this.$store.state.accountInfo.access_token}`,
         },
       };
-      axios(config)
-        .then((res) => {
-          this.refresh();
-          this.$q.notify({
-            type: "positive",
-            message: `Meeting deleted!`,
-          });
-          this.meetingDetailsDialog = false;
-        })
-        .catch((err) => {
-          console.log(err);
-          this.$q.notify({
-            type: "negative",
-            message: `Something went wrong. Try again later!`,
-          });
-        });
+      // axios(config)
+      //   .then((res) => {
+      //     this.refresh();
+      //     this.$q.notify({
+      //       type: "positive",
+      //       message: `Meeting deleted!`,
+      //     });
+      //     this.meetingDetailsDialog = false;
+      //   })
+      //   .catch((err) => {
+      //     console.log(err);
+      //     this.$q.notify({
+      //       type: "negative",
+      //       message: `Something went wrong. Try again later!`,
+      //     });
+      //   });
     },
   },
 };

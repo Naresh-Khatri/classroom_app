@@ -229,15 +229,15 @@ export default {
   computed: {},
   methods: {
     refresh() {
-      axios.get(calender).then(res => {
-        this.events = res.data;
-        res.data.forEach(ele => {
-          this.eventsDates.push(ele.date.replaceAll("-", "/"));
-        });
-        for (let i = 0; i < this.events.length; i++) {
-          this.events[i].date = this.events[i].date.replaceAll("-", "/");
-        }
-      });
+      // axios.get(calender).then(res => {
+      //   this.events = res.data;
+      //   res.data.forEach(ele => {
+      //     this.eventsDates.push(ele.date.replaceAll("-", "/"));
+      //   });
+      //   for (let i = 0; i < this.events.length; i++) {
+      //     this.events[i].date = this.events[i].date.replaceAll("-", "/");
+      //   }
+      // });
     },
     addNewEvent() {
       var date = this.newDate.replaceAll("/", "-");

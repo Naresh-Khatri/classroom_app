@@ -1,5 +1,5 @@
 <template>
-  <q-page class="bg-white q-pa-md f lex flex-cen ter">
+  <q-page v-if="user" class="bg-white q-pa-md f lex flex-cen ter">
     <div class="row" style="margin-top: 100px">
       <div class="col-3">
         <div>
@@ -13,7 +13,7 @@
         </div>
       </div>
       <div class="col-1 align-center">
-        <q-btn flat color="black" icon="edit" />
+        <q-btn flat color="black" icon="edit" @click="editProfile" />
       </div>
     </div>
     <div class="row q-mt-xl">
@@ -40,29 +40,68 @@
         </q-scroll-area>
       </div>
     </div>
-    <div class="row q-mt-xl">
+    <div class="q-mt-xl">
       <div class="text-grey-7 text-subtitle">My Badges</div>
-      <div v-for="(badge, i) in badges" :key="i">
-        <q-icon color="green" :name="badge" />
+      <q-separator class="q-ma-md" />
+      <div class="q-gutter-xs text-black">
+        <img
+          v-for="(badge, i) in getRandomBadges"
+          :key="i"
+          :src="badge"
+          width="75"
+        />
       </div>
     </div>
-    <div class="row q-mt-xl">
+    <div class="q-mt-xl">
       <div class="text-grey-7 text-subtitle">My interests</div>
+      <q-separator class="q-ma-md" />
+      <div class="q-gutter-xs text-black">
+        <q-chip
+          v-for="(interest, i) in getRandomInterests"
+          :key="i"
+          :label="interest.text"
+          :color="interest.color"
+          :text-color="interest.textColor"
+          size="17px"
+          :style="{ background: interest.color, color: interest.textColor }"
+          class="q-mr-sm"
+        />
+      </div>
     </div>
   </q-page>
 </template>
 
 <script>
 import statuses from "../data/profileStatuses";
+import interests from "../data/profileInterests";
 export default {
   data() {
     return {
       statuses: statuses,
+      interests: interests,
       activeStatus: "online",
-      badges: ["fas fa-certificate"],
+      badges: [
+        require("../assets/badges/new.svg"),
+        require("../assets/badges/best.svg"),
+        require("../assets/badges/diamond.svg"),
+        require("../assets/badges/fast.svg"),
+        require("../assets/badges/heart.svg"),
+        require("../assets/badges/mostLiked.svg"),
+        require("../assets/badges/verified.svg"),
+      ],
     };
   },
   computed: {
+    getRandomInterests() {
+      const interests = this.interests;
+      return interests.sort(() => 0.5 - Math.random()).slice(0, 4);
+    },
+    getRandomBadges() {
+      const badges = this.badges;
+      return badges
+        .sort(() => 0.5 - Math.random())
+        .slice(0, Math.random() * badges.length + 1);
+    },
     user() {
       console.log(this.$q.localStorage.getItem("loggedUser"));
       return this.$q.localStorage.getItem("loggedUser");
@@ -72,6 +111,27 @@ export default {
     setActiveStatus(id) {
       console.log("setting");
       this.activeStatus = id;
+    },
+    editProfile() {
+      this.$q
+        .dialog({
+          title: "Edit Profile",
+          message: "This feature is not implemented yet 😢",
+        })
+        .onOk(() => {
+          // console.log('OK')
+        })
+        .onCancel(() => {
+          // console.log('Cancel')
+        })
+        .onDismiss(() => {
+          // console.log('I am triggered on both OK and Cancel')
+        });
+      // this.$q.dialog({
+      //   title: "Edit Profile",
+      //   component: "edit-profile",
+      //   width: "500px",
+      // });
     },
   },
 };
