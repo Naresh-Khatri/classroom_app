@@ -119,12 +119,14 @@ export default {
             metadata: user.metadata,
             reloadUserInfo: user.reloadUserInfo,
           };
+          //save to vuex
+          this.$store.commit("setUserData", userInfo);
           this.$q.notify({
             color: "positive",
             message: "Login successful🍭",
           });
           //store userInfo obj in localstorage
-          this.$q.localStorage.set('loggedUser', userInfo)
+          this.$q.localStorage.set("loggedUser", userInfo);
           this.$router.push("/");
           //TODO: store userInfo obj in backend
         })

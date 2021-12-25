@@ -108,12 +108,12 @@ export default {
   },
   mounted() {
     this.canShowTopDate = true;
-    this.socket = io("http://localhost:3000");
+    this.socket = io("http://localhost:4000");
     // this.socket = io("http://147.139.72.188:4000");
     // this.socket = io("wss://classroomchat.plasmatch.in");
     this.socket.on("connect", () => {
       console.log("conneted to ws - " + this.socket.id);
-      this.$store.commit("updateSocket", this.socket);
+      // this.$store.commit("updateSocket", this.socket);
     });
     this.socket.on("receivePrevMsgsData", data => {
       // console.log(data);

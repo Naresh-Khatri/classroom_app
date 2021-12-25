@@ -14,6 +14,30 @@ import { createStore } from 'vuex'
 
 export default store(function (/* { ssrContext } */) {
   const Store = createStore({
+    state() {
+      return {
+        msgsData: [],
+        userData: {
+          name: '',
+          email: '',
+          photoURL: ''
+        }
+      }
+    },
+    mutations: {
+      setUserData(state, payload) {
+        console.log('setUserData', payload)
+        state.userData = payload
+      },
+      updateMsgsData(state, payload) {
+        state.msgsData = payload
+      },
+      addMsg(state, payload) {
+        state.msgsData.push(payload)
+      }
+
+    },
+
     modules: {
       // example
     },

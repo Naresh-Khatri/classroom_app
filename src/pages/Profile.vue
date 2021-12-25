@@ -103,8 +103,7 @@ export default {
         .slice(0, Math.random() * badges.length + 1);
     },
     user() {
-      console.log(this.$q.localStorage.getItem("loggedUser"));
-      return this.$q.localStorage.getItem("loggedUser");
+      return this.$store.state.userData;
     },
   },
   methods: {

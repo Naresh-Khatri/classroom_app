@@ -3,7 +3,7 @@
     <div class="top-left-btn">
       <q-btn
         v-if="$route.meta.showMenu"
-        class='absolute'
+        class="absolute"
         color="primary"
         dense
         flat
@@ -14,7 +14,7 @@
         @click="leftDrawerOpen = !leftDrawerOpen"
       /><q-btn
         v-else
-        class='absolute'
+        class="absolute"
         color="primary"
         size="lg"
         flat
@@ -40,7 +40,7 @@
             color="white"
             style="border-radius: 50%"
             rounded
-            :name="isLoggedIn ? 'img:' + userProfilePic : 'person_off'"
+            :name="isLoggedIn ? 'img:' + getPhotoURL : 'person_off'"
           />
           <div v-if="!isLoggedIn">
             <div class="text-h6 text-white">Unknown user</div>
@@ -116,30 +116,26 @@ export default {
   data() {
     return {
       link: "home",
-      leftDrawerOpen: false,
+      leftDrawerOpen: true,
       essentialLinks: drawerLinksData,
       // accountInfo: this.$store.state.accountInfo,
       userName: "",
       userEmail: "",
-      userProfilePic: "",
       logoutDialog: false,
     };
   },
   computed: {
     firstName() {
-      return this.userName.split(" ")[0];
+      return this.$store.state.userData.name.split(" ")[0];
     },
     lastName() {
-      return this.userName.split(" ")[1] || "";
+      return this.$store.state.userData.name.split(" ")[1] || "";
+    },
+    getPhotoURL() {
+      return this.$store.state.userData.photoURL;
     },
     isLoggedIn() {
-      return !!this.userName;
-    },
-    isStaff() {
-      if (this.$store.state.accountInfo) {
-        return this.$store.state.accountInfo.is_staff;
-      }
-      return false;
+      return !!this.$store.state.userData.name;
     },
   },
   watch: {
@@ -163,10 +159,7 @@ export default {
     checkStorage() {
       const user = this.$q.localStorage.getItem("loggedUser");
       if (user) {
-        console.log(user);
-        this.userName = user.name;
-        this.userEmail = user.email;
-        this.userProfilePic = user.photoURL;
+        this.$store.commit("setUserData", user);
       }
     },
     refresh(done) {
@@ -176,10 +169,11 @@ export default {
     },
     logout() {
       localStorage.removeItem("loggedUser");
+      this.$store.commit("setUserData", {});
       // this.$store.state.accountInfo = {};
       // console.log(this.$store.state.accountInfo);
       this.logoutDialog = false;
-      this.$router.go();
+      // this.$router.go();
 
       const auth = getAuth();
       signOut(auth)
@@ -229,10 +223,11 @@ export default {
   color: white;
   background: #8cc26b;
 }
-.q-drawer__content, .q-drawer__backdrop {
+.q-drawer__content,
+.q-drawer__backdrop {
   backdrop-filter: blur(2px);
 }
-.top-left-btn{
+.top-left-btn {
   position: absolute;
   color: white;
   z-index: 10;

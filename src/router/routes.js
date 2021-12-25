@@ -38,7 +38,7 @@ const routes = [
         }
       },
       {
-        path: 'forum', component: () => import('pages/forum.vue'), name: "Forum",
+        path: 'forum', component: () => import('pages/Forum.vue'), name: "Forum",
         meta: {
           showMenu: false, statusBarStyle: { color: '#5455e5' }
         }

@@ -5,6 +5,10 @@
         <!-- <div class='text-black'>home</div> -->
         <Home />
       </q-tab-panel>
+      <q-tab-panel name="forum" class="q-pa-xm" style="padding: 0px">
+        <!-- <div class='text-black'>home</div> -->
+        <Forum />
+      </q-tab-panel>
       <q-tab-panel name="profile" class="q-pa-xm" style="padding: 0px">
         <!-- <div class='text-black'>home</div> -->
         <Profile />
@@ -13,7 +17,7 @@
     <q-tabs v-model="tab" class="bg-primary bottom-nav">
       <q-tab name="home" icon="fas fa-home" />
       <q-tab name="book" icon="fas fa-book-open" />
-      <q-tab name="chat" icon="fas fa-comments" />
+      <q-tab name="forum" icon="fas fa-comments" />
       <q-tab name="profile" icon="fas fa-user" />
     </q-tabs>
   </q-page>
@@ -25,9 +29,10 @@ import { meetings, calender } from "../apiendpoints.js";
 
 import Home from "./Home.vue";
 import Profile from "./Profile.vue";
+import Forum from "./Forum.vue";
 
 export default {
-  components: { Home, Profile },
+  components: { Home, Profile, Forum },
   data() {
     return {
       meetingsList: [

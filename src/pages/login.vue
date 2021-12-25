@@ -61,7 +61,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 // import { login } from "../apiendpoints.js";
 
@@ -75,6 +74,8 @@ export default {
   },
   methods: {
     googleLogin() {
+      this.$store.commit("setUserData", {});
+      return;
       const provider = new GoogleAuthProvider();
       const auth = getAuth();
       signInWithPopup(auth, provider)
@@ -82,19 +83,17 @@ export default {
           console.log(res);
           // This gives you a Google Access Token. You can use it to access the Google API.
           const credential = GoogleAuthProvider.credentialFromResult(res);
-          const additionalUserInfo = GoogleAuthProvider.additionalUserInfoFromResult(res);
-          console.log(credential, additionalUserInfo)
+          const additionalUserInfo =
+            GoogleAuthProvider.additionalUserInfoFromResult(res);
+          console.log(credential, additionalUserInfo);
           const user = res.user;
           const userInfo = {
-            uid: user.uid,
-            email: user.email,
-            phone: user.phoneNumber,
             name: user.displayName,
-            emailVerified: user.emailVerified,
+            email: user.email,
             photoURL: user.photoURL,
-            metadata: user.metadata,
-            reloadUserInfo: user.reloadUserInfo,
           };
+          //save to vuex
+          this.$store.commit("setUserData", {});
           this.$q.notify({
             color: "positive",
             message: "Login successful🍭",
