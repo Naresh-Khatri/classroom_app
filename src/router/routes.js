@@ -55,6 +55,12 @@ const routes = [
           showMenu: false, statusBarStyle: { color: '#5455e5' }
         }
       },
+      {
+        path: 'club', component: () => import('pages/Club.vue'), name: "Club",
+        meta: {
+          showMenu: false, statusBarStyle: { color: '#5455e5' }
+        }
+      },
     ]
   },
 

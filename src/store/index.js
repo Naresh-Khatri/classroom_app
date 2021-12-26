@@ -21,7 +21,8 @@ export default store(function (/* { ssrContext } */) {
           name: '',
           email: '',
           photoURL: ''
-        }
+        },
+        socket:null,
       }
     },
     mutations: {
@@ -32,9 +33,12 @@ export default store(function (/* { ssrContext } */) {
       updateMsgsData(state, payload) {
         state.msgsData = payload
       },
-      addMsg(state, payload) {
+      appendNewMsgData(state, payload) {
         state.msgsData.push(payload)
-      }
+      },
+      updateSocket(state, payload) {
+        state.socket = payload
+      },
 
     },
 

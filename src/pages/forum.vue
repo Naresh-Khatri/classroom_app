@@ -2,9 +2,15 @@
   <q-page>
     <div
       class="date"
-      style="width:100vw;position:absolute; display:flex;
-       justify-content:center; align-items:center; z-index:10;
-        margin-top:15px"
+      style="
+        width: 100vw;
+        position: absolute;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10;
+        margin-top: 15px;
+      "
     >
       <!-- <div
         class="text-white"
@@ -30,7 +36,7 @@
       @scroll="showTopDate"
       ref="scrollArea"
       class="absolute-full"
-      style="height:90%"
+      style="height: 90%"
     >
       <!--       
       <q-chat-message
@@ -50,9 +56,6 @@
         :key="index"
         :name="msg.username"
         :text="[msg.text]"
-        :bg-color="isOwner(msg) ? 'white' : 'primary'"
-        :text-color="isOwner(msg) ? 'black' : 'white'"
-        :sent="isOwner(msg)"
         :stamp="getTimespamp(msg.timestamp)"
       />
     </q-scroll-area>
@@ -72,7 +75,7 @@
       bg-color="white"
       placeholder="Type a message"
       @keydown.enter="sendMsg"
-      class="absolute-bottom q-mb-md"
+      class="absolute-bottom q-mb-xl"
     >
       <template v-slot:before>
         <q-avatar>
@@ -98,31 +101,32 @@ export default {
       unreadChatCount: 0,
       topMsgDate: "",
       canShowTopDate: true,
-      timer: null
+      timer: null,
     };
   },
   computed: {
     getMsgsData() {
       return this.$store.state.msgsData;
-    }
+    },
   },
   mounted() {
+    // console.log(this.$refs.scrollArea);
     this.canShowTopDate = true;
     this.socket = io("http://localhost:4000");
     // this.socket = io("http://147.139.72.188:4000");
     // this.socket = io("wss://classroomchat.plasmatch.in");
     this.socket.on("connect", () => {
       console.log("conneted to ws - " + this.socket.id);
-      // this.$store.commit("updateSocket", this.socket);
+      this.$store.commit("updateSocket", this.socket);
     });
-    this.socket.on("receivePrevMsgsData", data => {
+    this.socket.on("receivePrevMsgsData", (data) => {
       // console.log(data);
       this.$store.commit("updateMsgsData", data);
       setTimeout(() => {
         this.scrollBottom();
       }, 500);
     });
-    this.socket.on("receiveMsg", data => {
+    this.socket.on("receiveMsg", (data) => {
       console.log(data);
       this.$store.commit("appendNewMsgData", data);
       this.animateScroll();
@@ -137,13 +141,14 @@ export default {
       if (this.msgText == "") return;
       const payload = {
         username: this.socket.id,
-        text: [this.msgText]
+        text: [this.msgText],
       };
       this.socket.emit("sendMsg", payload);
       this.msgText = "";
     },
     scrollBottom() {
       this.$refs.scrollArea.setScrollPosition(
+        'vertical',
         this.$refs.scrollArea.scrollSize,
         400
       );
@@ -192,7 +197,7 @@ export default {
         "September",
         "October",
         "November",
-        "December"
+        "December",
       ];
       this.topMsgDate =
         new Date(this.getMsgsData[e.target.dataset.id].timestamp).getDate() +
@@ -226,8 +231,8 @@ export default {
     },
     formatNumber(str) {
       return `${String(str).length == 1 ? "0" : ""}${String(str)}`;
-    }
-  }
+    },
+  },
 };
 </script>
 <style scoped>

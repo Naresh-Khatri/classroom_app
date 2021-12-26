@@ -1,5 +1,5 @@
 <template>
-  <q-page v-if="user" class="bg-white q-pa-md f lex flex-cen ter">
+  <q-page v-if="user" class="bg-white q-pa-md q-mb-md">
     <div class="row" style="margin-top: 100px">
       <div class="col-3">
         <div>
@@ -72,51 +72,54 @@
 </template>
 
 <script>
-import statuses from "../data/profileStatuses";
-import interests from "../data/profileInterests";
+import statusesJSON from "../data/profileStatuses";
+import interestsJSON from "../data/profileInterests";
+import { ref, computed } from "vue";
+import { useStore } from "vuex";
+import { useQuasar } from "quasar";
+
 export default {
-  data() {
-    return {
-      statuses: statuses,
-      interests: interests,
-      activeStatus: "online",
-      badges: [
-        require("../assets/badges/new.svg"),
-        require("../assets/badges/best.svg"),
-        require("../assets/badges/diamond.svg"),
-        require("../assets/badges/fast.svg"),
-        require("../assets/badges/heart.svg"),
-        require("../assets/badges/mostLiked.svg"),
-        require("../assets/badges/verified.svg"),
-      ],
-    };
-  },
-  computed: {
-    getRandomInterests() {
-      const interests = this.interests;
-      return interests.sort(() => 0.5 - Math.random()).slice(0, 4);
-    },
-    getRandomBadges() {
-      const badges = this.badges;
-      return badges
+  setup() {
+    const store = useStore();
+    const $q = useQuasar();
+
+    const statuses = ref(statusesJSON);
+    const interests = ref(interestsJSON);
+    const activeStatus = ref("online");
+    const badges = ref([
+      require("../assets/badges/new.svg"),
+      require("../assets/badges/best.svg"),
+      require("../assets/badges/diamond.svg"),
+      require("../assets/badges/fast.svg"),
+      require("../assets/badges/heart.svg"),
+      require("../assets/badges/mostLiked.svg"),
+      require("../assets/badges/verified.svg"),
+    ]);
+
+    // const statuses = store.state.profileStatuses;
+    // const interests = store.state.profileInterests;
+
+    const user = computed(() => store.state.userData);
+    const getRandomInterests = computed(() => {
+      const interestsCopy = interests;
+      return interestsCopy.value.sort(() => 0.5 - Math.random()).slice(0, 4);
+    });
+    const getRandomBadges = computed(() => {
+      const badgesCopy = badges;
+      return badgesCopy.value
         .sort(() => 0.5 - Math.random())
-        .slice(0, Math.random() * badges.length + 1);
-    },
-    user() {
-      return this.$store.state.userData;
-    },
-  },
-  methods: {
-    setActiveStatus(id) {
+        .slice(0, Math.random() * badges.value.length + 1);
+    });
+
+    const setActiveStatus = (id) => {
       console.log("setting");
-      this.activeStatus = id;
-    },
-    editProfile() {
-      this.$q
-        .dialog({
-          title: "Edit Profile",
-          message: "This feature is not implemented yet 😢",
-        })
+      activeStatus = id;
+    };
+    const editProfile = () => {
+      $q.dialog({
+        title: "Edit Profile",
+        message: "This feature is not implemented yet 😢",
+      })
         .onOk(() => {
           // console.log('OK')
         })
@@ -126,12 +129,24 @@ export default {
         .onDismiss(() => {
           // console.log('I am triggered on both OK and Cancel')
         });
-      // this.$q.dialog({
+      // $q.dialog({
       //   title: "Edit Profile",
       //   component: "edit-profile",
       //   width: "500px",
       // });
-    },
+    };
+
+    return {
+      user,
+      statuses,
+      interests,
+      activeStatus,
+      badges,
+      getRandomBadges,
+      getRandomInterests,
+      setActiveStatus,
+      editProfile,
+    };
   },
 };
 </script>

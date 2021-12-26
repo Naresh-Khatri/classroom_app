@@ -116,7 +116,7 @@ export default {
   data() {
     return {
       link: "home",
-      leftDrawerOpen: true,
+      leftDrawerOpen: false,
       essentialLinks: drawerLinksData,
       // accountInfo: this.$store.state.accountInfo,
       userName: "",
@@ -141,16 +141,16 @@ export default {
   watch: {
     $route(to, from) {
       // console.log(to, from);
-      console.log(this.$q.platform.is.mobile);
-      if (this.$q.platform.is.mobile)
-        StatusBar.setBackgroundColor(to.meta.statusBarStyle);
+      // console.log(this.$q.platform.is.mobile);
+      // if (this.$q.platform.is.mobile)
+      //   StatusBar.setBackgroundColor(to.meta.statusBarStyle);
     },
   },
   created() {
     this.checkStorage();
     // console.log(this.$q.platform.is.mobile);
-    if (this.$q.platform.is.mobile)
-      StatusBar.setBackgroundColor(this.$route.meta.statusBarStyle);
+    // if (this.$q.platform.is.mobile)
+    //   StatusBar.setBackgroundColor(this.$route.meta.statusBarStyle);
   },
   updated() {
     //console.log(this.$store.getters.isLoggedIn);
@@ -228,10 +228,14 @@ export default {
   backdrop-filter: blur(2px);
 }
 .top-left-btn {
-  position: absolute;
+  position: fixed;
   color: white;
   z-index: 10;
   top: 25px;
   left: 25px;
+}
+a{
+  text-decoration: none;
+  
 }
 </style>
