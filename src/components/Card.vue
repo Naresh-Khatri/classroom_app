@@ -5,18 +5,30 @@
         {{ title }}
       </div>
       <div class="self-end">
-        <q-btn
-          :label="btnText"
-          flat
-          rounded
-          color="black"
-          style="background: white"
-        />
+        <div v-if="link">
+          <router-link :to="link">
+            <q-btn
+              :label="btnText"
+              flat
+              rounded
+              color="black"
+              style="background: white"
+          /></router-link>
+        </div>
+        <div v-else>
+          <q-btn
+            :label="btnText"
+            flat
+            rounded
+            color="black"
+            style="background: white"
+          />
+        </div>
       </div>
     </div>
     <div class="col-4">
       <transition
-        appear="true"
+        appear
         enter-active-class="animated fadeIn"
         leave-active-class="animated fadeOut"
       >
@@ -45,6 +57,9 @@ export default {
       type: String,
       default: "",
     },
+    link: {
+      type: String,
+    },
   },
   setup(props) {
     return {};
@@ -52,4 +67,8 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+a {
+  text-decoration: none;
+}
+</style>

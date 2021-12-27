@@ -61,6 +61,12 @@ const routes = [
           showMenu: false, statusBarStyle: { color: '#5455e5' }
         }
       },
+      {
+        path: 'arithmetic-game', component: () => import('pages/games/Arithmetic.vue'), name: "Arithmetic",
+        meta: {
+          showMenu: false, statusBarStyle: { color: '#5455e5' }
+        }
+      },
     ]
   },
 

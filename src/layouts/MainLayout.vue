@@ -55,7 +55,7 @@
           <div v-else>
             <div>
               <span class="text-h4 text-white">{{ firstName }} </span>
-              <span class="text-h6  text-white"> {{ lastName }}</span>
+              <span class="text-h6 text-white"> {{ lastName }}</span>
             </div>
             <q-btn
               color="secondary"
@@ -94,7 +94,7 @@
     <q-page-container>
       <!-- <q-pull-to-refresh @refresh="refresh"> -->
       <transition name="router-anim">
-        <router-view style="background: #202053" />
+        <router-view />
       </transition>
       <!-- </q-pull-to-refresh> -->
     </q-page-container>
@@ -102,6 +102,10 @@
 </template>
 
 <script>
+import { ref, computed, onMounted, watchEffect } from "vue";
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
+import { useQuasar } from "quasar";
 import { getAuth, signOut } from "firebase/auth";
 
 import EssentialLink from "components/EssentialLink.vue";
@@ -113,83 +117,115 @@ const { StatusBar } = Plugins;
 export default {
   name: "MainLayout",
   components: { EssentialLink },
-  data() {
-    return {
-      link: "home",
-      leftDrawerOpen: false,
-      essentialLinks: drawerLinksData,
-      // accountInfo: this.$store.state.accountInfo,
-      userName: "",
-      userEmail: "",
-      logoutDialog: false,
-    };
-  },
-  computed: {
-    firstName() {
-      return this.$store.state.userData.name.split(" ")[0];
-    },
-    lastName() {
-      return this.$store.state.userData.name.split(" ")[1] || "";
-    },
-    getPhotoURL() {
-      return this.$store.state.userData.photoURL;
-    },
-    isLoggedIn() {
-      return !!this.$store.state.userData.name;
-    },
-  },
-  watch: {
-    $route(to, from) {
-      // console.log(to, from);
-      // console.log(this.$q.platform.is.mobile);
-      // if (this.$q.platform.is.mobile)
+
+  setup() {
+    const store = useStore();
+    const $q = useQuasar();
+    const $router = useRouter();
+
+    const link = ref("home");
+    const leftDrawerOpen = ref(false);
+    const essentialLinks = ref(drawerLinksData);
+    const userName = ref(null);
+    const userEmail = ref(null);
+    const logoutDialog = ref(false);
+
+    const firstName = computed(() => store.state.userData.name.split(" ")[0]);
+    const lastName = computed(
+      () => store.state.userData.name.split(" ")[1] || ""
+    );
+    const getPhotoURL = computed(() => store.state.userData.photoURL);
+    const isLoggedIn = computed(() => !!store.state.userData.name);
+
+    onMounted(() => {
+      checkLogin();
+      checkStorage();
+      // if ($q.platform.is.mobile)
+      //   StatusBar.setBackgroundColor(this.$route.meta.statusBarStyle);
+    });
+    watchEffect(() => {
+      // if ($q.platform.is.mobile)
       //   StatusBar.setBackgroundColor(to.meta.statusBarStyle);
-    },
-  },
-  created() {
-    this.checkStorage();
-    // console.log(this.$q.platform.is.mobile);
-    // if (this.$q.platform.is.mobile)
-    //   StatusBar.setBackgroundColor(this.$route.meta.statusBarStyle);
-  },
-  updated() {
-    //console.log(this.$store.getters.isLoggedIn);
-  },
-  methods: {
-    checkStorage() {
-      const user = this.$q.localStorage.getItem("loggedUser");
+    });
+    const checkLogin =()=>{
+      getAuth().onAuthStateChanged(user => {
+        if (user) {
+          store.commit("setUserData", {
+            name: user.displayName,
+            email: user.email,
+            photoURL: user.photoURL
+          });
+          userName.value = user.displayName;
+          userEmail.value = user.email;
+        } else {
+          $q.dialog({
+            title: "Login",
+            message: "You are not logged in. Please login to continue.",
+            persistent: true,
+            ok: "Login"
+          }).onOk(() => {
+            $router.push("/signup");
+          });
+          store.commit("setUserData", {
+            name: null,
+            email: null,
+            photoURL: null
+          });
+          userName.value = null;
+          userEmail.value = null;
+        }
+      });
+    }
+    const checkStorage = () => {
+      const user = $q.localStorage.getItem("loggedUser");
       if (user) {
-        this.$store.commit("setUserData", user);
+        store.commit("setUserData", user);
       }
-    },
-    refresh(done) {
+    };
+    const refresh = (done) => {
       setTimeout(() => {
         done();
       }, 1000);
-    },
-    logout() {
+    };
+    const logout = () => {
+      console.log("logout");
       localStorage.removeItem("loggedUser");
-      this.$store.commit("setUserData", {});
-      // this.$store.state.accountInfo = {};
-      // console.log(this.$store.state.accountInfo);
-      this.logoutDialog = false;
+      store.commit("setUserData", {});
+      // store.state.accountInfo = {};
+      // console.log(store.state.accountInfo);
+      logoutDialog.value = false;
       // this.$router.go();
 
       const auth = getAuth();
       signOut(auth)
         .then(() => {
-          this.$q.notify({
+          $q.notify({
             type: "positive",
             message: `Logged out Successfully!`,
           });
         })
         .catch((error) => {
-          this.$q.notify({
+          $q.notify({
             type: "negatice",
             message: `could not logout!`,
           });
         });
-    },
+    };
+    return {
+      link,
+      leftDrawerOpen,
+      essentialLinks,
+      userName,
+      userEmail,
+      logoutDialog,
+      firstName,
+      lastName,
+      getPhotoURL,
+      isLoggedIn,
+      checkStorage,
+      refresh,
+      logout,
+    };
   },
 };
 </script>
@@ -234,8 +270,7 @@ export default {
   top: 25px;
   left: 25px;
 }
-a{
+a {
   text-decoration: none;
-
 }
 </style>
