@@ -22,6 +22,7 @@ export default store(function (/* { ssrContext } */) {
           email: '',
           photoURL: ''
         },
+        tab:'home',
         socket:null,
       }
     },
@@ -39,6 +40,10 @@ export default store(function (/* { ssrContext } */) {
       updateSocket(state, payload) {
         state.socket = payload
       },
+      updateTab(state, payload) {
+      console.log("go home", payload);
+      state.tab = payload
+      }
 
     },
 

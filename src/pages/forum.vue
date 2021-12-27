@@ -1,5 +1,34 @@
 <template>
   <q-page>
+    <div class="top-left-btn">
+      <q-btn
+        class="absolute"
+        color="primary"
+        style="background: white; width: 60px; height: 60px; z-index: 10"
+        flat
+        dense
+        round
+        icon="arrow_back_ios"
+        aria-label="Menu"
+        @click="$router.go(-1)"
+      />
+    </div>
+    <!-- <q-btn
+      color="primary"
+      style="
+        background: white;
+        width: 60px;
+        height: 60px;
+        z-index: 10;
+        left: 200px;
+      "
+      flat
+      dense
+      round
+      icon="download"
+      aria-label="Menu"
+      @click="scrollBottom"
+    /> -->
     <div
       class="date"
       style="
@@ -12,13 +41,6 @@
         margin-top: 15px;
       "
     >
-      <!-- <div
-        class="text-white"
-        style="background:#4646ad; display:inline; padding:10px 30px;
-               border-radius:20px;margin-top:15px"
-      >
-        19 September
-      </div> -->
       <transition name="slide-fade">
         <div v-if="canShowTopDate">
           <q-chip
@@ -52,7 +74,7 @@
         :data-id="index"
         class="q-mx-sm text-white"
         v-for="(msg, index) in getMsgsData"
-        avatar="https://cdn.quasar.dev/img/avatar1.jpg"
+        :avatar="msg.photoURL||'https://cdn.quasar.dev/img/avatar1.jpg'"
         :key="index"
         :name="msg.username"
         :text="[msg.text]"
@@ -61,30 +83,26 @@
     </q-scroll-area>
     <!-- Scroll bottom button -->
     <q-page-sticky position="bottom-right" :offset="[18, 88]">
-      <q-btn v-if="unreadChatCount" round icon="expand_more" color="primary">
-        <q-badge rounded color="orange" floating @click="scrollBottom()">{{
-          unreadChatCount
-        }}</q-badge>
+      <q-btn v-if="unreadChatCount" @click="scrollBottom" round icon="expand_more" color="primary">
+        <q-badge rounded color="orange" floating>{{ unreadChatCount }}</q-badge>
       </q-btn>
     </q-page-sticky>
     <!-- Text Input box -->
     <q-input
-      rounded
       filled
       v-model="msgText"
-      bg-color="white"
       placeholder="Type a message"
       @keydown.enter="sendMsg"
-      class="absolute-bottom q-mb-xl"
+      class="absolute-bottom q-ma-md"
     >
-      <template v-slot:before>
+      <!-- <template v-slot:before>
         <q-avatar>
           <img src="https://cdn.quasar.dev/img/avatar5.jpg" />
         </q-avatar>
-      </template>
+      </template> -->
 
       <template v-slot:after>
-        <q-btn round dense flat color="white" icon="send" @click="sendMsg" />
+        <q-btn round dense flat color="green" icon="send" @click="sendMsg" />
       </template>
     </q-input>
   </q-page>
@@ -92,99 +110,102 @@
 
 <script>
 import io from "socket.io-client";
+import { useStore } from "vuex";
+import { ref, computed, onMounted } from "vue";
 
 export default {
-  data() {
-    return {
-      socket: null,
-      msgText: "",
-      unreadChatCount: 0,
-      topMsgDate: "",
-      canShowTopDate: true,
-      timer: null,
+  setup() {
+    const store = useStore();
+
+    const msgText = ref("");
+    const unreadChatCount = ref(3);
+    const socket = ref(null);
+    const topMsgDate = ref(null);
+    const canShowTopDate = ref(false);
+    const timer = ref(null);
+    const getMsgsData = computed(() => store.state.msgsData);
+    const scrollArea = ref(null);
+
+    onMounted(() => {
+      canShowTopDate.value = true;
+      socket.value = io("http://localhost:4000");
+      // socket.value = io("http://147.139.72.188:4000");
+      // socket.value = io("wss://classroomchat.plasmatch.in");
+      socket.value.on("connect", () => {
+        console.log("conneted to ws - " + socket.value.id);
+        // store.commit("updateSocket", socket.value);
+      });
+      socket.value.on("receivePrevMsgsData", (data) => {
+        // console.log(data);
+        store.commit("updateMsgsData", data);
+        setTimeout(() => {
+          scrollBottom();
+        }, 500);
+      });
+      socket.value.on("receiveMsg", (data) => {
+        console.log(data);
+        store.commit("appendNewMsgData", data);
+        unreadChatCount.value++;
+        animateScroll();
+      });
+    });
+    const isOwner = (msg) => {
+      return msg.username == socket.value.id;
     };
-  },
-  computed: {
-    getMsgsData() {
-      return this.$store.state.msgsData;
-    },
-  },
-  mounted() {
-    // console.log(this.$refs.scrollArea);
-    this.canShowTopDate = true;
-    this.socket = io("http://localhost:4000");
-    // this.socket = io("http://147.139.72.188:4000");
-    // this.socket = io("wss://classroomchat.plasmatch.in");
-    this.socket.on("connect", () => {
-      console.log("conneted to ws - " + this.socket.id);
-      this.$store.commit("updateSocket", this.socket);
-    });
-    this.socket.on("receivePrevMsgsData", (data) => {
-      // console.log(data);
-      this.$store.commit("updateMsgsData", data);
-      setTimeout(() => {
-        this.scrollBottom();
-      }, 500);
-    });
-    this.socket.on("receiveMsg", (data) => {
-      console.log(data);
-      this.$store.commit("appendNewMsgData", data);
-      this.animateScroll();
-    });
-  },
-  methods: {
-    isOwner(msg) {
-      return msg.username == this.socket.id;
-    },
-    sendMsg() {
-      this.canShowTopDate = !this.canShowTopDate;
-      if (this.msgText == "") return;
+    const sendMsg = () => {
+      canShowTopDate.value = !canShowTopDate.value;
+      if (msgText.value == "") return;
       const payload = {
-        username: this.socket.id,
-        text: [this.msgText],
+        username: socket.value.id,
+        photoURL: store.state.userData.photoURL,
+        text: [msgText.value],
       };
-      this.socket.emit("sendMsg", payload);
-      this.msgText = "";
-    },
-    scrollBottom() {
-      this.$refs.scrollArea.setScrollPosition(
-        'vertical',
-        this.$refs.scrollArea.scrollSize,
+
+      scrollBottom();
+      socket.value.emit("sendMsg", payload);
+      msgText.value = "";
+    };
+    const scrollBottom = () => {
+      // console.log(scrollArea.value.);
+      scrollArea.value.setScrollPosition(
+        "vertical",
+        scrollArea.value.getScroll().verticalSize,
         400
       );
-      this.unreadChatCount = 0;
-    },
-    animateScroll() {
+      unreadChatCount.value = 0;
+    };
+    const animateScroll = () => {
       //when scroll is not in bottom
       if (
-        this.$refs.scrollArea.getScrollPosition() +
-          this.$refs.scrollArea.containerHeight <
-        this.$refs.scrollArea.scrollSize
+        // scrollArea.value.getScrollPosition() +
+        getMsgsData.value.length * 71.9 <
+        scrollArea.value.getScroll().verticalSize
       ) {
-        this.unreadChatCount++;
+        unreadChatCount.value++;
         return;
       }
       // console.log(
-      //   this.$refs.scrollArea.getScrollPosition() +
-      //     this.$refs.scrollArea.containerHeight,
-      //   this.$refs.scrollArea.scrollSize
+      //   scrollArea.value.getScrollPosition() +
+      //     scrollArea.value.containerHeight,
+      //   scrollArea.value.scrollSize
       // );
-      this.$refs.scrollArea.setScrollPosition(
-        this.$refs.scrollArea.scrollSize,
+      scrollArea.value.setScrollPosition(
+        "vertical",
+        scrollArea.value.scrollSize,
         400
       );
-    },
-    showTopDate() {
+    };
+    const showTopDate = () => {
       //make a disappearing logic when idle and appear when scrolled up
-      //debouce this method since scroll
-      this.canShowTopDate = true;
-      clearTimeout(this.timer);
-      this.timer = setTimeout(() => {
-        this.canShowTopDate = false;
+      //debouce method since scroll
+      canShowTopDate.value = true;
+      clearTimeout(timer.value);
+      timer.value = setTimeout(() => {
+        canShowTopDate.value = false;
       }, 1500);
-    },
-    setTopMsgDate(e) {
-      // this.$refs.DateBox.style
+    };
+    const setTopMsgDate = (e) => {
+      // DateBox.style
       const monthNames = [
         "January",
         "February",
@@ -199,20 +220,20 @@ export default {
         "November",
         "December",
       ];
-      this.topMsgDate =
-        new Date(this.getMsgsData[e.target.dataset.id].timestamp).getDate() +
+      topMsgDate.value =
+        new Date(getMsgsData.value[e.target.dataset.id].timestamp).getDate() +
         " " +
         monthNames[
-          new Date(this.getMsgsData[e.target.dataset.id].timestamp).getMonth()
+          new Date(getMsgsData.value[e.target.dataset.id].timestamp).getMonth()
         ];
 
-      // console.log(new Date(this.getMsgsData[e.target.dataset.id].timestamp).getDate(),
+      // console.log(new Date(getMsgsData.value[e.target.dataset.id].timestamp).getDate(),
       //   monthNames[
-      //     new Date(this.getMsgsData[e.target.dataset.id].timestamp).getMonth()
+      //     new Date(getMsgsData.value[e.target.dataset.id].timestamp).getMonth()
       //   ]
       // );
-    },
-    getTimespamp(time) {
+    };
+    const getTimespamp = (time) => {
       const currentTime = Date.now();
       const unixTime = new Date(time).getTime();
       const timeDiff = currentTime - unixTime;
@@ -221,17 +242,34 @@ export default {
       const mins = new Date(unixTime).getMinutes();
       const hours = new Date(unixTime).getHours();
 
-      return `${this.formatNumber(
-        hours > 12 ? hours - 12 : hours
-      )}:${this.formatNumber(mins)} ${hours >= 12 ? "PM" : "AM"}`;
+      return `${formatNumber(hours > 12 ? hours - 12 : hours)}:${formatNumber(
+        mins
+      )} ${hours >= 12 ? "PM" : "AM"}`;
       // if (secs > 86400) return `${Math.ceil(secs / 86400)}d ago`;
       // else if (secs > 3600) return `${Math.ceil(secs / 3600)}h ago`;
       // else if (secs > 60) return `${Math.ceil(secs / 60)}m ago`;
       // else return `${secs}s ago`;
-    },
-    formatNumber(str) {
+    };
+    const formatNumber = (str) => {
       return `${String(str).length == 1 ? "0" : ""}${String(str)}`;
-    },
+    };
+    return {
+      msgText,
+      unreadChatCount,
+      socket,
+      topMsgDate,
+      canShowTopDate,
+      getMsgsData,
+      scrollArea,
+      isOwner,
+      sendMsg,
+      scrollBottom,
+      animateScroll,
+      showTopDate,
+      setTopMsgDate,
+      getTimespamp,
+      formatNumber,
+    };
   },
 };
 </script>
@@ -257,5 +295,12 @@ export default {
 }
 .slide-fade-enter-active {
   transition: all 1s ease;
+}
+.top-left-btn {
+  position: fixed;
+  color: white;
+  z-index: 10;
+  top: 25px;
+  left: 25px;
 }
 </style>

@@ -96,6 +96,18 @@
       <transition name="router-anim">
         <router-view />
       </transition>
+      <q-footer class="text-white" v-if="$route.name != 'Forum'">
+        <q-toolbar style="padding: 0">
+          <q-toolbar-title>
+            <q-tabs v-model="tab" class="bg-primary bottom-nav">
+              <q-route-tab to="/" icon="fas fa-home" />
+              <q-route-tab to="/games" icon="fas fa-book-open" />
+              <q-route-tab to="/forum" icon="fas fa-comments" />
+              <q-route-tab to="/profile" icon="fas fa-user" />
+            </q-tabs>
+          </q-toolbar-title>
+        </q-toolbar>
+      </q-footer>
       <!-- </q-pull-to-refresh> -->
     </q-page-container>
   </q-layout>
@@ -123,6 +135,7 @@ export default {
     const $q = useQuasar();
     const $router = useRouter();
 
+    const tab = ref("home");
     const link = ref("home");
     const leftDrawerOpen = ref(false);
     const essentialLinks = ref(drawerLinksData);
@@ -147,13 +160,13 @@ export default {
       // if ($q.platform.is.mobile)
       //   StatusBar.setBackgroundColor(to.meta.statusBarStyle);
     });
-    const checkLogin =()=>{
-      getAuth().onAuthStateChanged(user => {
+    const checkLogin = () => {
+      getAuth().onAuthStateChanged((user) => {
         if (user) {
           store.commit("setUserData", {
             name: user.displayName,
             email: user.email,
-            photoURL: user.photoURL
+            photoURL: user.photoURL,
           });
           userName.value = user.displayName;
           userEmail.value = user.email;
@@ -162,20 +175,20 @@ export default {
             title: "Login",
             message: "You are not logged in. Please login to continue.",
             persistent: true,
-            ok: "Login"
+            ok: "Login",
           }).onOk(() => {
             $router.push("/signup");
           });
           store.commit("setUserData", {
             name: null,
             email: null,
-            photoURL: null
+            photoURL: null,
           });
           userName.value = null;
           userEmail.value = null;
         }
       });
-    }
+    };
     const checkStorage = () => {
       const user = $q.localStorage.getItem("loggedUser");
       if (user) {
@@ -212,6 +225,7 @@ export default {
         });
     };
     return {
+      tab,
       link,
       leftDrawerOpen,
       essentialLinks,
@@ -269,6 +283,15 @@ export default {
   z-index: 10;
   top: 25px;
   left: 25px;
+}
+.bottom-nav {
+  border-radius: 20px 20px 0px 0px;
+  position: absolute;
+  display: flex;
+  justify-content: space-evenly;
+  bottom: 0;
+  height: 10vh;
+  width: 100%;
 }
 a {
   text-decoration: none;

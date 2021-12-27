@@ -62,6 +62,18 @@ const routes = [
         }
       },
       {
+        path: 'profile', component: () => import('pages/Profile.vue'), name: "Profile",
+        meta: {
+          showMenu: false, statusBarStyle: { color: '#5455e5' }
+        }
+      },
+
+      {
+        path: 'games', component: () => import('pages/Games.vue'), name: "Games",
+        meta: {
+          showMenu: false, statusBarStyle: { color: '#5455e5' }
+        }
+      },      {
         path: 'arithmetic-game', component: () => import('pages/games/Arithmetic.vue'), name: "Arithmetic",
         meta: {
           showMenu: false, statusBarStyle: { color: '#5455e5' }

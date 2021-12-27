@@ -1,5 +1,5 @@
 <template>
-  <q-page>
+  <q-page class='bg-primary'>
     <header class="bg-cyan flex flex-center relative" style="height: 150px">
       <div
         class="bg-white rounded"
