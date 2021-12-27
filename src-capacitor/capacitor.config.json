@@ -1,5 +1,5 @@
 {
-  "appId": "com.classroom.app",
+  "appId": "org.capacitor.quasar.app",
   "appName": "Classroom App",
   "bundledWebRuntime": false,
   "npmClient": "yarn",

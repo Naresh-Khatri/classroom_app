@@ -5,7 +5,11 @@
         <!-- <div class='text-black'>home</div> -->
         <Home />
       </q-tab-panel>
-      <q-tab-panel name="forum" class="q-pa-xm" style="padding: 0px">
+      <q-tab-panel name="games" class="q-pa-xm" style="padding: 0px">
+        <!-- <div class='text-black'>home</div> -->
+        <Games />
+      </q-tab-panel>
+        <q-tab-panel name="forum" class="q-pa-xm" style="padding: 0px">
         <!-- <div class='text-black'>home</div> -->
         <Forum />
       </q-tab-panel>
@@ -19,7 +23,7 @@
         <q-toolbar-title>
           <q-tabs v-model="tab" class="bg-primary bottom-nav">
             <q-tab name="home" icon="fas fa-home" />
-            <q-tab name="book" icon="fas fa-book-open" />
+            <q-tab name="games" icon="fas fa-book-open" />
             <q-tab name="forum" icon="fas fa-comments" />
             <q-tab name="profile" icon="fas fa-user" />
           </q-tabs>
@@ -35,12 +39,13 @@ import axios from "axios";
 import Home from "./Home.vue";
 import Profile from "./Profile.vue";
 import Forum from "./Forum.vue";
+import Games from "./Games.vue";
 
 export default {
-  components: { Home, Profile, Forum },
+  components: { Home, Profile, Forum, Games },
   data() {
     return {
-      tab: "home",
+      tab: "games",
       date: "",
       startingAt: "",
       endignAt: "",
@@ -84,6 +89,8 @@ export default {
 .bottom-nav {
   border-radius: 20px 20px 0px 0px;
   position: absolute;
+  display: flex;
+  justify-content: space-evenly;
   bottom: 0;
   height: 10vh;
   width: 100%;

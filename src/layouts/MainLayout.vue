@@ -55,7 +55,7 @@
           <div v-else>
             <div>
               <span class="text-h4 text-white">{{ firstName }} </span>
-              <span class="text-h6 text-white">{{ lastName }}</span>
+              <span class="text-h6  text-white"> {{ lastName }}</span>
             </div>
             <q-btn
               color="secondary"
@@ -236,6 +236,6 @@ export default {
 }
 a{
   text-decoration: none;
-  
+
 }
 </style>

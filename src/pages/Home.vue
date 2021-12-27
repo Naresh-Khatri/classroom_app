@@ -61,30 +61,13 @@
           white-space: nowrap;
         "
       >
-        <div
-          class="q-mr-md row inline card bg-dark shadow-15 "
-          style="width: 275px"
+        <Card
           v-for="(club, i) in clubs"
           :key="i"
-        >
-          <div class="col-8 flex">
-            <div class="text-bold self-start" style="font-size: 16px">
-              {{ club.name }}
-            </div>
-            <div class="self-end">
-              <q-btn
-                label="join now!"
-                flat
-                rounded
-                color="black"
-                style="background: white"
-              />
-            </div>
-          </div>
-          <div class="col-4">
-            <q-img :src="club.image" width="75" />
-          </div>
-        </div>
+          :title="club.name"
+          :image="club.image"
+          :btnText="'Join now!'"
+        />
       </q-scroll-area>
     </q-card-section>
   </q-page>
@@ -95,8 +78,12 @@ import { ref, computed } from "vue";
 import { useStore } from "vuex";
 
 import clubsJSON from "../data/clubsInfo";
+import Card from "../components/Card.vue";
 
 export default {
+  components: {
+    Card,
+  },
   setup() {
     const store = useStore();
 
