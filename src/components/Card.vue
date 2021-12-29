@@ -1,41 +1,54 @@
 <template>
-  <div class="q-mr-md row inline card bg-dark shadow-15" style="width: 275px">
-    <div class="col-8 flex">
-      <div class="text-bold self-start" style="font-size: 16px">
-        {{ title }}
-      </div>
-      <div class="self-end">
-        <div v-if="link">
-          <router-link :to="link">
-            <q-btn
-              :label="btnText"
-              flat
-              rounded
-              color="black"
-              style="background: white"
-          /></router-link>
-        </div>
-        <div v-else>
-          <q-btn
-            :label="btnText"
-            flat
-            rounded
-            color="black"
-            style="background: white"
-          />
-        </div>
-      </div>
-    </div>
-    <div class="col-4">
+  <transition
+    appear
+    enter-active-class="animated  slideInUp"
+    leave-active-class="animated fadeOut"
+  >
+    <div class="q-mr-md row inline card bg-dark shadow-15" style="width: 275px">
       <transition
         appear
-        enter-active-class="animated fadeIn"
+        enter-active-class="animated backInRight"
         leave-active-class="animated fadeOut"
       >
-        <q-img :src="image" width="75" />
+        <div class="col-8 flex">
+          <div class="text-bold self-start" style="font-size: 16px">
+            {{ title }}
+          </div>
+          <div class="self-end">
+            <div v-if="link">
+              <router-link :to="link">
+                <q-btn
+                  :label="btnText"
+                  flat
+                  rounded
+                  color="black"
+                  style="background: white"
+              /></router-link>
+            </div>
+            <div v-else>
+              <q-btn
+                :label="btnText"
+                flat
+                rounded
+                color="black"
+                style="background: white"
+              />
+            </div>
+          </div>
+        </div>
       </transition>
+      <div class="col-4">
+        <transition
+          appear
+          enter-active-class="animated backInLeft"
+          leave-active-class="animated fadeOut"
+          :duration="5000"
+        >
+          <q-img :src="image" width="75" />
+        </transition>
+      </div>
     </div>
-  </div>
+  </transition>
 </template>
 
 <script>

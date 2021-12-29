@@ -5,11 +5,16 @@
         <div class="flex items-center">
           <span class="text-h6 text-black"> 1,233 </span>
           <img src="../assets/game/coin.png" width="30" />
+          <transition
+            appear
+            enter-active-class="animated slideInDown"
+            leave-active-class="animated fadeOut">
           <img
             class="shadow-15 q-ml-md"
             style="border-radius: 50%; height: 75px"
             :src="profilePic"
           />
+          </transition>
         </div>
       </div>
     </header>

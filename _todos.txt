@@ -1,2 +1,10 @@
 badges
 integrated code editor
+
+create a simple arithmetic game
+
+28/12/2021
+
+save userInfo on DB
+save chats to DB
+save status, badges and interests to DB

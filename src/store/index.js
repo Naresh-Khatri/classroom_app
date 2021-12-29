@@ -18,15 +18,24 @@ export default store(function (/* { ssrContext } */) {
       return {
         msgsData: [],
         userData: {
+          id: '',
           name: '',
           email: '',
-          photoURL: ''
+          photoURL: '',
+          status: 'online',
+          rollNo: '19fh1a0546',
+          regulation: 'R19',
+          year: 'III',
+          sem: 'I',
         },
-        tab:'home',
-        socket:null,
+        tab: 'home',
+        socket: null,
       }
     },
     mutations: {
+      setUserStatus(state, status) {
+        state.userData.status = status
+      },
       setUserData(state, payload) {
         console.log('setUserData', payload)
         state.userData = payload
@@ -41,8 +50,8 @@ export default store(function (/* { ssrContext } */) {
         state.socket = payload
       },
       updateTab(state, payload) {
-      console.log("go home", payload);
-      state.tab = payload
+        console.log("go home", payload);
+        state.tab = payload
       }
 
     },

@@ -114,6 +114,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 import { ref, computed, onMounted, watchEffect } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
@@ -163,13 +164,14 @@ export default {
     const checkLogin = () => {
       getAuth().onAuthStateChanged((user) => {
         if (user) {
-          store.commit("setUserData", {
-            name: user.displayName,
-            email: user.email,
-            photoURL: user.photoURL,
-          });
-          userName.value = user.displayName;
-          userEmail.value = user.email;
+          axios
+            // .post("http://localhost:4000/user/getUser", { uid: user.uid })
+            .post("https://classroomchat.plasmatch.in/user/getUser", { uid: user.uid })
+            .then((res) => {
+              store.commit("setUserData", res.data);
+              userName.value = res.data.name;
+              userEmail.value = res.data.email;
+            });
         } else {
           $q.dialog({
             title: "Login",
@@ -180,6 +182,7 @@ export default {
             $router.push("/signup");
           });
           store.commit("setUserData", {
+            uid: null,
             name: null,
             email: null,
             photoURL: null,

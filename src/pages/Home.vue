@@ -1,20 +1,33 @@
 <template>
   <!-- <div class="text-white" style="background:#202053">Hello World</div> -->
-  <q-page class="q-pa-md">
+  <q-page>
     <header class="q-ma-xl">
       <div class="row">
         <div class="col-10 flex items-center">
-          <div class="text-h6">
-            <div class="text-black text-weight-bolder">Hi {{ username }}</div>
-            <div class="text-grey-7">Good Morning!</div>
-          </div>
+          <transition
+            appear
+            enter-active-class="animated slideInLeft"
+            leave-active-class="animated fadeOut"
+          >
+            <div class="text-h6">
+              <div class="text-black text-weight-bolder">Hi {{ username }}</div>
+              <div class="text-grey-7">Good Morning!</div>
+            </div>
+          </transition>
         </div>
         <div class="col-2">
-          <img
-            class="shadow-15"
-            style="border-radius: 50%; height: 75px"
-            :src="profilePic"
-          />
+          <transition
+            appear
+            enter-active-class="animated slideInRight"
+            leave-active-class="animated fadeOut"
+            ><router-link to="/profile">
+              <img
+                class="shadow-15"
+                style="border-radius: 50%; height: 75px"
+                :src="profilePic"
+              />
+            </router-link>
+          </transition>
         </div>
       </div>
     </header>
@@ -43,8 +56,8 @@
         </div>
       </router-link>
     </q-card-section>
-    <q-card-section>
-      <div class="row q-my-md">
+    <q-card-section style="padding: 0px">
+      <div class="row q-ma-md">
         <div class="col-8">
           <div class="text-black text-bold text-h6">More clubs</div>
         </div>
@@ -52,23 +65,26 @@
           <div class="text-grey text-bold text-right">See all</div>
         </div>
       </div>
-      <q-scroll-area
-        style="
-          display: flex;
-          flex-direction: row;
-          height: 160px;
-          max-width: 90vw;
-          white-space: nowrap;
-        "
-      >
-        <Card
-          v-for="(club, i) in clubs"
-          :key="i"
-          :title="club.name"
-          :image="club.image"
-          :btnText="'Join now!'"
-        />
-      </q-scroll-area>
+      <div class="flex justify-center">
+        <q-scroll-area
+          style="
+            display: flex;
+            justify-content: center;
+            flex-direction: row;
+            height: 200px;
+            width: 90vw;
+            white-space: nowrap;
+          "
+        >
+          <Card
+            v-for="(club, i) in clubs"
+            :key="i"
+            :title="club.name"
+            :image="club.image"
+            :btnText="'Join now!'"
+          />
+        </q-scroll-area>
+      </div>
     </q-card-section>
   </q-page>
 </template>

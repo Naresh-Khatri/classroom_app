@@ -28,13 +28,30 @@
             :key="i"
           >
             <q-chip
+              v-if="status.id == user.status"
               :label="status.text"
               :color="status.color"
               :text-color="status.textColor"
               size="17px"
               :style="{ background: status.color, color: status.textColor }"
               class="q-mr-sm"
-              :class="activeStatus == status.id ? 'shadow-10' : 'disabled'"
+              :class="user.status == status.id ? 'shadow-10' : 'disabled'"
+            />
+          </span>
+          <span
+            @click="setActiveStatus(status.id)"
+            v-for="(status, i) in statuses"
+            :key="i"
+          >
+            <q-chip
+              v-if="status.id !== user.status"
+              :label="status.text"
+              :color="status.color"
+              :text-color="status.textColor"
+              size="17px"
+              :style="{ background: status.color, color: status.textColor }"
+              class="q-mr-sm"
+              :class="user.status == status.id ? 'shadow-10' : 'disabled'"
             />
           </span>
         </q-scroll-area>
@@ -53,7 +70,11 @@
       </div>
     </div>
     <div class="q-mt-xl">
-      <div class="text-grey-7 text-subtitle">My interests</div>
+      <div class="text-grey-7 text-subtitle">
+        My interests
+
+        <q-btn flat color="black" icon="edit" @click="editInterests" />
+      </div>
       <q-separator class="q-ma-md" />
       <div class="q-gutter-xs text-black">
         <q-chip
@@ -68,13 +89,52 @@
         />
       </div>
     </div>
+    <q-card-section>
+      <div class="row q-mt-xl">
+        <div class="col-12 flex justify-between items-center">
+          <div class="text-grey-7 text-subtitle">My performance</div>
+          <a
+            href="https://naresh-khatri.github.io/JNTUA-result-analyser-spa/#/"
+          >
+            <q-chip
+              class="q-pa-lg text-center flex items-center shadow-10"
+              style="
+                background: #ff4d01;
+                color: white;
+                font-size: 12px;
+                height: 40px;
+              "
+            >
+              Powered by<br />
+              <img src="../assets/JRA.png" width="30" />
+            </q-chip>
+          </a>
+        </div>
+      </div>
+      <div class="row flex items-center q-mt-xl" style="flex-direction: column">
+        <q-knob
+          readonly
+          v-model="sgpa"
+          show-value
+          size="120px"
+          :thickness="0.22"
+          :max="10"
+          color="green"
+          track-color="grey-3"
+          class="q-ma-md"
+        ></q-knob>
+        <div class="text-grey-7 text-subtitle">last sem SGPA</div>
+      </div>
+    </q-card-section>
   </q-page>
 </template>
 
 <script>
+import axios from "axios";
+
 import statusesJSON from "../data/profileStatuses";
 import interestsJSON from "../data/profileInterests";
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useStore } from "vuex";
 import { useQuasar } from "quasar";
 
@@ -110,10 +170,35 @@ export default {
         .sort(() => 0.5 - Math.random())
         .slice(0, Math.random() * badges.value.length + 1);
     });
+    const sgpa = ref(0);
+    onMounted(async () => {
+      try {
+        const res = await axios.get(
+          "https://jntua.plasmatch.in/singleResultv2/19fh1a0546/R19/B.TECH/II/II"
+        );
+        console.log(res.data);
+        sgpa.value = res.data.sgpa;
+      } catch (e) {
+        console.log(e);
+      }
+    });
 
     const setActiveStatus = (id) => {
       console.log("setting");
-      activeStatus = id;
+      activeStatus.value = id;
+      axios
+        // .post("http://localhost:4000/user/changeStatus", {
+        .post("https://classroomchat.plasmatch.in/user/changeStatus", {
+          status: id,
+          uid: user.value.uid,
+        })
+        .then(function (response) {
+          console.log(response);
+          store.commit("setUserStatus", id);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
     };
     const editProfile = () => {
       $q.dialog({
@@ -135,17 +220,25 @@ export default {
       //   width: "500px",
       // });
     };
-
+    const editInterests = () => {
+      $q.dialog({
+        title: "Edit Interests",
+        message: "This feature is not implemented yet 😢",
+        width: "500px",
+      });
+    };
     return {
       user,
       statuses,
       interests,
       activeStatus,
       badges,
+      sgpa,
       getRandomBadges,
       getRandomInterests,
       setActiveStatus,
       editProfile,
+      editInterests,
     };
   },
 };
