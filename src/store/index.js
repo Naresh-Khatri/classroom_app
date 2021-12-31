@@ -30,6 +30,18 @@ export default store(function (/* { ssrContext } */) {
         },
         tab: 'home',
         socket: null,
+        typingUsers: [
+        //   {
+        //   id: '',
+        //   username: 'john',
+        //   photoURL: "https://lh3.googleusercontent.com/a-/AOh14GhLpLJa_LjxB2QA3WDGRa7n0ihXc8GKdrnKiFMd=s96-c"
+        // },
+        // {
+        //   id: '',
+        //   username: 'okay',
+        //   photoURL: "https://lh3.googleusercontent.com/a-/AOh14GhLpLJa_LjxB2QA3WDGRa7n0ihXc8GKdrnKiFMd=s96-c"
+        // },
+      ],
       }
     },
     mutations: {
@@ -40,6 +52,7 @@ export default store(function (/* { ssrContext } */) {
         console.log('setUserData', payload)
         state.userData = payload
       },
+
       updateMsgsData(state, payload) {
         state.msgsData = payload
       },
@@ -52,10 +65,28 @@ export default store(function (/* { ssrContext } */) {
       updateTab(state, payload) {
         console.log("go home", payload);
         state.tab = payload
+      },
+      addToTypingUsers(state, payload) {
+        state.typingUsers.push(payload)
+      },
+      removeFromTypingUsers(state, payload) {
+        state.typingUsers = state.typingUsers.filter(user => user.id != payload.id)
       }
 
     },
-
+    actions: {
+      updateTypingUsers({ commit }, payload) {
+        if (payload.typing == true) {
+          commit('addToTypingUsers', payload)
+          //timeout to remove user from typingUsers
+          setTimeout(() => {
+            commit('removeFromTypingUsers', payload)
+          }, 10000)
+        }
+        else
+          commit('removeFromTypingUsers', payload)
+      },
+    },
     modules: {
       // example
     },

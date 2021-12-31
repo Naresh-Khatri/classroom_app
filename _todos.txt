@@ -8,3 +8,11 @@ create a simple arithmetic game
 save userInfo on DB
 save chats to DB
 save status, badges and interests to DB
+
+29/12/2021
+
+implement chat 
+
+30/12/2021
+
+add typing...

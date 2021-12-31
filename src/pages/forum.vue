@@ -83,6 +83,12 @@
             :label="getDatestamp(msg.timestamp)"
           />
         </div>
+        <transition
+          appear
+          :enter-active-class="`animated ${
+            isOwner(msg.user) ? 'slideInRight' : 'slideInLeft'
+          } `"
+        >
           <q-chat-message
             v-intersection="onChatMessageIntersection"
             :key="index"
@@ -95,7 +101,25 @@
             :text="[msg.text]"
             :stamp="getTimestamp(msg.timestamp)"
           />
+        </transition>
       </div>
+      <!-- typing indicators -->
+      <transition-group
+        appear
+        enter-active-class="animated slideInLeft"
+        leave-active-class="animated fadeOut"
+      >
+        <q-chat-message
+          v-for="(user, index) in getTypingUsers"
+          :key="index"
+          :name="user.username"
+          :avatar="user.photoURL || 'https://cdn.quasar.dev/img/avatar1.jpg'"
+          bg-color="amber"
+        >
+          <q-spinner-dots size="2rem"></q-spinner-dots>
+        </q-chat-message>
+      </transition-group>
+      <!-- typing users: {{ getTypingUsers }} -->
     </q-scroll-area>
     <!-- Scroll bottom button -->
     <q-page-sticky position="bottom-right" :offset="[18, 88]">
@@ -119,8 +143,12 @@
       v-model="msgText"
       placeholder="Type a message"
       @keydown.enter="sendMsg"
+      @keydown="debounceSendMsg"
       class="absolute-bottom q-ma-md"
     >
+      <!-- isTyping: {{ typing }} -->
+      <!-- v-for="(user, index) in getTypingUsers"
+        :key="index" -->
       <!-- <template v-slot:before>
         <q-avatar>
           <img src="https://cdn.quasar.dev/img/avatar5.jpg" />
@@ -151,16 +179,20 @@ export default {
     const timer = ref(null);
     const scrollArea = ref(null);
     const chatsInView = ref([]);
+    const debounce = ref(null);
+    const typing = ref(false);
 
+    const getMsgsData = computed(() => store.state.msgsData);
+    const getTypingUsers = computed(() => store.state.typingUsers);
     const getUserId = computed(() => store.state.userData.uid);
     const getUsername = computed(() => store.state.userData.name);
-    const getMsgsData = computed(() => store.state.msgsData);
+    const getPhotoURL = computed(() => store.state.userData.photoURL);
 
     onMounted(() => {
       canShowTopDate.value = true;
       // socket.value = io("http://147.139.72.188:4000");
-      socket.value = io("ws://localhost:4000", { transports: ["websocket"] });
-      // socket.value = io("wss://classroomchat.plasmatch.in");
+      // socket.value = io("ws://localhost:4000", { transports: ["websocket"] });
+      socket.value = io("wss://classroomchat.plasmatch.in");
       socket.value.on("connect", () => {
         console.log("conneted to ws - " + socket.value.id);
         // store.commit("updateSocket", socket.value);
@@ -172,20 +204,18 @@ export default {
           scrollBottom();
         }, 500);
       });
+      socket.value.on("typing", (data) => {
+        store.dispatch("updateTypingUsers", data);
+        scrollBottom();
+      });
       socket.value.on("receiveMsg", (data) => {
         console.log(data);
         store.commit("appendNewMsgData", data);
         unreadChatCount.value++;
-        console.log(
-          scrollArea.value.getScroll().verticalSize,
-          scrollArea.value.getScroll().verticalPosition,
-          scrollArea.value.getScroll().verticalSize -
-            scrollArea.value.getScroll().verticalPosition
-        );
+        //741 is the diff btw size and pos
         const scrollDelta =
           scrollArea.value.getScroll().verticalSize -
           scrollArea.value.getScroll().verticalPosition;
-        //741 is the diff btw size and pos
         if (scrollDelta < 800) scrollBottom();
         // scrollArea.value.get
         // setTimeout(() => {
@@ -196,6 +226,24 @@ export default {
     });
     const getDate = (time) => new Date(time).getDate();
 
+    const debounceSendMsg = () => {
+      const user = {
+        uid: getUserId.value,
+        username: getUsername.value,
+        photoURL: getPhotoURL.value,
+      };
+      if (!typing.value) {
+        console.log("emitting typing");
+        socket.value.emit("typing", Object.assign(user, { typing: true }));
+      }
+      typing.value = true;
+      clearTimeout(debounce.value);
+      debounce.value = setTimeout(() => {
+        typing.value = false;
+        socket.value.emit("typing", Object.assign(user, { typing: false }));
+        // socket.value.emit("typing", Object.assign(user, { typing: false }));
+      }, 2000);
+    };
     const isOwner = (uid) => {
       return uid == getUserId.value;
     };
@@ -206,7 +254,7 @@ export default {
       const payload = {
         user: getUserId.value,
         name: getUsername.value,
-        photoURL: store.state.userData.photoURL,
+        photoURL: getPhotoURL.value,
         text: [msgText.value],
       };
       //server broadcasts payloads
@@ -348,6 +396,9 @@ export default {
     };
     return {
       msgText,
+      typing,
+      debounceSendMsg,
+      getTypingUsers,
       unreadChatCount,
       socket,
       topMsgDate,
