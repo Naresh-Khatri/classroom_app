@@ -83,12 +83,20 @@
             :label="getDatestamp(msg.timestamp)"
           />
         </div>
+        <!-- {{msg.timestamp}} -->
+        <!-- {{getMsgsData[index].timestamp}} -->
+        <!-- {{ getMsgsData[index].user }} -->
+        <!-- {{ msg.uid }} -->
         <transition
           appear
           :enter-active-class="`animated ${
             isOwner(msg.user) ? 'slideInRight' : 'slideInLeft'
           } `"
+          v-if="index != 0"
         >
+          <!-- dont show name if last msg is from same user
+            and show if date has passed -->
+
           <q-chat-message
             v-intersection="onChatMessageIntersection"
             :key="index"
@@ -96,7 +104,13 @@
             :sent="isOwner(msg.user)"
             class="q-mx-sm text-white"
             :avatar="msg.photoURL || 'https://cdn.quasar.dev/img/avatar1.jpg'"
-            :name="`<span class='text-black'>${msg.name}</span>`"
+            :name="
+              getMsgsData[index - 1].user != msg.user ||
+              getDate(msg.timestamp) !=
+                getDate(getMsgsData[index == 0 ? 0 : index - 1].timestamp)
+                ? `<span class='text-black'>${msg.name}</span>`
+                : ''
+            "
             name-html
             :text="[msg.text]"
             :stamp="getTimestamp(msg.timestamp)"
@@ -190,7 +204,6 @@ export default {
 
     onMounted(() => {
       canShowTopDate.value = true;
-      // socket.value = io("http://147.139.72.188:4000");
       // socket.value = io("ws://localhost:4000", { transports: ["websocket"] });
       socket.value = io("wss://classroomchat.plasmatch.in");
       socket.value.on("connect", () => {
