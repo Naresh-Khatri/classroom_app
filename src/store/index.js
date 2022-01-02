@@ -81,7 +81,7 @@ export default store(function (/* { ssrContext } */) {
           //timeout to remove user from typingUsers
           setTimeout(() => {
             commit('removeFromTypingUsers', payload)
-          }, 10000)
+          }, 50000)
         }
         else
           commit('removeFromTypingUsers', payload)
