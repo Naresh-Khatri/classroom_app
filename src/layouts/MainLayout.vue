@@ -277,7 +277,7 @@ export default {
   background: #8cc26b;
 }
 .q-drawer__content,
-.q-drawer__backdrop {
+.q-drawer__backdrop, .q-dialog__backdrop  {
   backdrop-filter: blur(2px);
 }
 .top-left-btn {

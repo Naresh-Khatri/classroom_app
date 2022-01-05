@@ -20,7 +20,7 @@
       <div class="col-12">
         <div class="text-grey-7 text-subtitle">My status</div>
         <q-scroll-area
-          style="height: 50px; max-width: 90vw; white-space: nowrap"
+          style="height: 60px; max-width: 90vw; white-space: nowrap"
         >
           <span
             @click="setActiveStatus(status.id)"
@@ -132,6 +132,8 @@
 <script>
 import axios from "axios";
 
+import ProfileEdit from "../components/ProfileEdit.vue";
+
 import statusesJSON from "../data/profileStatuses";
 import interestsJSON from "../data/profileInterests";
 import { ref, computed, onMounted } from "vue";
@@ -139,6 +141,7 @@ import { useStore } from "vuex";
 import { useQuasar } from "quasar";
 
 export default {
+  components: {},
   setup() {
     const store = useStore();
     const $q = useQuasar();
@@ -202,8 +205,7 @@ export default {
     };
     const editProfile = () => {
       $q.dialog({
-        title: "Edit Profile",
-        message: "This feature is not implemented yet 😢",
+        component: ProfileEdit,
       })
         .onOk(() => {
           // console.log('OK')
