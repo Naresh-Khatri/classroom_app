@@ -20,6 +20,7 @@
     "moment": "^2.29.1",
     "quasar": "^2.0.0",
     "socket.io-client": "^4.4.0",
+    "vue-advanced-cropper": "^2.7.1",
     "vue-beautiful-chat": "^2.5.0",
     "vuex": "^4.0.1"
   },
@@ -47,5 +48,12 @@
     "node": ">= 12.22.1",
     "npm": ">= 6.13.4",
     "yarn": ">= 1.21.1"
+  },
+  "proxy": {
+    "**": {
+      "target": "https://classroomchat.plasmatch.in",
+      "changeOrigin": true,
+      "secure": false
+    }
   }
 }
