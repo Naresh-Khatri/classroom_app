@@ -16,3 +16,22 @@ implement chat
 30/12/2021
 
 add typing...
+
+5/1/2022
+
+add multer to upload images
+
+6/1/2022
+
+add a proxy in package.json
+✅add a veux action to fetch user info
+✅new endpoint GET /getProtoURL/:uid to get the proto url
+✅compress image before storing using imagemin
+✅show default img only if user has not uploaded any image
+✅add cropping to profile picture upload using vue-advanced-cropper
+
+7/1/2022
+
+✅add a api config file
+progress bar while uploading image
+polish profile pic upload component

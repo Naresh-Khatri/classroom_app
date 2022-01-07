@@ -3,7 +3,11 @@
     <div class="row" style="margin-top: 100px">
       <div class="col-3">
         <div>
-          <img :src="user.photoURL" style="border-radius: 50%; width: 100%" />
+          <img
+            class="shadow-10"
+            :src="photoURL"
+            style="border-radius: 50%; width: 100%"
+          />
         </div>
       </div>
       <div class="col-7">
@@ -85,7 +89,7 @@
           :text-color="interest.textColor"
           size="17px"
           :style="{ background: interest.color, color: interest.textColor }"
-          class="q-mr-sm"
+          class="q-mr-sm shadow-10"
         />
       </div>
     </div>
@@ -131,6 +135,7 @@
 
 <script>
 import axios from "axios";
+import { api } from "boot/axios";
 
 import ProfileEdit from "../components/ProfileEdit.vue";
 
@@ -163,6 +168,9 @@ export default {
     // const interests = store.state.profileInterests;
 
     const user = computed(() => store.state.userData);
+    const photoURL =
+      store.state.userData.customProfilePic || store.state.userData.photoURL;
+
     const getRandomInterests = computed(() => {
       const interestsCopy = interests;
       return interestsCopy.value.sort(() => 0.5 - Math.random()).slice(0, 4);
@@ -175,12 +183,16 @@ export default {
     });
     const sgpa = ref(0);
     onMounted(async () => {
+      setInterval(() => {
+        photoURL + "?1";
+        // console.log('updating profile pic', user.value.customProfilePic)
+      }, 1000);
       try {
-        const res = await axios.get(
-          "https://jntua.plasmatch.in/singleResultv2/19fh1a0546/R19/B.TECH/II/II"
-        );
-        console.log(res.data);
-        sgpa.value = res.data.sgpa;
+        editProfile();
+        // const res = await axios.get(
+        //   "https://jntua.plasmatch.in/singleResultv2/19fh1a0546/R19/B.TECH/II/II"
+        // );
+        // sgpa.value = res.data.sgpa;
       } catch (e) {
         console.log(e);
       }
@@ -189,9 +201,8 @@ export default {
     const setActiveStatus = (id) => {
       console.log("setting");
       activeStatus.value = id;
-      axios
-        // .post("http://localhost:4000/user/changeStatus", {
-        .post("https://classroomchat.plasmatch.in/user/changeStatus", {
+      api
+        .post("/user/changeStatus", {
           status: id,
           uid: user.value.uid,
         })
@@ -231,6 +242,7 @@ export default {
     };
     return {
       user,
+      photoURL,
       statuses,
       interests,
       activeStatus,

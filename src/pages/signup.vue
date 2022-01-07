@@ -90,7 +90,8 @@ import { useQuasar } from "quasar";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 
-import axios from "axios";
+// import axios from "axios";
+import { api } from "boot/axios";
 
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 
@@ -133,7 +134,7 @@ export default {
             message: "Login successful🍭",
           });
           //store userInfo obj in localstorage
-          $q.localStorage.set("loggedUser", userInfo);
+          // $q.localStorage.set("loggedUser", userInfo);
           $router.push("/");
           //TODO: store userInfo obj in backend
         })
@@ -165,11 +166,7 @@ export default {
       console.log(user);
       console.log(userInfo);
       try {
-        const res = await axios.post(
-          // "http://localhost:4000/register",
-          "https://classroomchat.plasmatch.in/register",
-          userInfo
-        );
+        const res = await api.post("/user/register", userInfo);
         console.log(res);
       } catch (err) {
         console.log(err);

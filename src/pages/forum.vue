@@ -181,6 +181,8 @@ import io from "socket.io-client";
 import { useStore } from "vuex";
 import { ref, computed, onMounted } from "vue";
 
+import {prefixWs } from '../apiConfig'
+
 export default {
   setup() {
     const store = useStore();
@@ -205,7 +207,8 @@ export default {
     onMounted(() => {
       canShowTopDate.value = true;
       // socket.value = io("ws://localhost:4000", { transports: ["websocket"] });
-      socket.value = io("wss://classroomchat.plasmatch.in");
+      // socket.value = io("wss://classroomchat.plasmatch.in");
+      socket.value = io(prefixWs);
       socket.value.on("connect", () => {
         console.log("conneted to ws - " + socket.value.id);
         // store.commit("updateSocket", socket.value);
