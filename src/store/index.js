@@ -1,6 +1,10 @@
 import { store } from 'quasar/wrappers'
 import { createStore } from 'vuex'
 
+import axios from 'axios'
+import { api } from 'boot/axios'
+import { prefix } from '../apiConfig'
+
 // import example from './module-example'
 
 /*
@@ -31,17 +35,7 @@ export default store(function (/* { ssrContext } */) {
         tab: 'home',
         socket: null,
         typingUsers: [
-        //   {
-        //   id: '',
-        //   username: 'john',
-        //   photoURL: "https://lh3.googleusercontent.com/a-/AOh14GhLpLJa_LjxB2QA3WDGRa7n0ihXc8GKdrnKiFMd=s96-c"
-        // },
-        // {
-        //   id: '',
-        //   username: 'okay',
-        //   photoURL: "https://lh3.googleusercontent.com/a-/AOh14GhLpLJa_LjxB2QA3WDGRa7n0ihXc8GKdrnKiFMd=s96-c"
-        // },
-      ],
+        ],
       }
     },
     mutations: {
@@ -51,8 +45,13 @@ export default store(function (/* { ssrContext } */) {
       setUserData(state, payload) {
         console.log('setUserData', payload)
         state.userData = payload
+        localStorage.setItem('userData', JSON.stringify(state.userData))
       },
 
+      addPhotoUrlParams(state, payload) {
+        //force reload <img/> by adding params to src
+        state.userData.photoURL += '?'
+      },
       updateMsgsData(state, payload) {
         state.msgsData = payload
       },
@@ -75,6 +74,24 @@ export default store(function (/* { ssrContext } */) {
 
     },
     actions: {
+      getUserData({ commit }, user) {
+        //gets the userInfo from API and replace default photoURL if custom 
+        //is present and store it in the state
+        api.post('/user/getUser',
+          // .post('http://localhost:4000/user/getUser',
+          { uid: user.uid }).then(res => {
+            console.log(res.data)
+            //set custom profile pic if exists
+            if (res.data.customProfilePic) {
+              // console.log(res.data.photoURL)
+              res.data.photoURL = prefix + '/user/getPhotoURL/' + res.data.uid
+              res.data.photoURL = 'http://localhost:4000/user/getPhotoURL/' + res.data.uid
+              // console.log(res.data.photoURL)
+            }
+            commit('setUserData', res.data)
+          })
+          .catch(err => console.log('error in updateUserData', err))
+      },
       updateTypingUsers({ commit }, payload) {
         if (payload.typing == true) {
           commit('addToTypingUsers', payload)

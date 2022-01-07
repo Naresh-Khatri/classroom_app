@@ -35,13 +35,15 @@
       <!-- content-class="bg-grey-1" -->
       <q-list>
         <div class="q-pa-md q-pb-lg bg-primary">
-          <q-icon
-            size="100px"
-            color="white"
-            style="border-radius: 50%"
-            rounded
-            :name="isLoggedIn ? 'img:' + getPhotoURL : 'person_off'"
-          />
+          <router-link to="/profile">
+            <q-icon
+              size="100px"
+              color="white"
+              style="border-radius: 50%"
+              rounded
+              :name="isLoggedIn ? 'img:' + getPhotoURL : 'person_off'"
+            />
+          </router-link>
           <div v-if="!isLoggedIn">
             <div class="text-h6 text-white">Unknown user</div>
             <q-btn
@@ -114,7 +116,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 import { ref, computed, onMounted, watchEffect } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
@@ -140,8 +141,6 @@ export default {
     const link = ref("home");
     const leftDrawerOpen = ref(false);
     const essentialLinks = ref(drawerLinksData);
-    const userName = ref(null);
-    const userEmail = ref(null);
     const logoutDialog = ref(false);
 
     const firstName = computed(() => store.state.userData.name.split(" ")[0]);
@@ -164,14 +163,13 @@ export default {
     const checkLogin = () => {
       getAuth().onAuthStateChanged((user) => {
         if (user) {
-          axios
-            // .post("http://localhost:4000/user/getUser", { uid: user.uid })
-            .post("https://classroomchat.plasmatch.in/user/getUser", { uid: user.uid })
-            .then((res) => {
-              store.commit("setUserData", res.data);
-              userName.value = res.data.name;
-              userEmail.value = res.data.email;
-            });
+          store.dispatch("getUserData", user);
+          // axios
+          //   // .post("http://localhost:4000/user/getUser", { uid: user.uid })
+          //   .post("/user/getUser", { uid: user.uid })
+          //   .then((res) => {
+          //     store.commit("setUserData", res.data);
+          //   });
         } else {
           $q.dialog({
             title: "Login",
@@ -181,14 +179,12 @@ export default {
           }).onOk(() => {
             $router.push("/signup");
           });
-          store.commit("setUserData", {
-            uid: null,
-            name: null,
-            email: null,
-            photoURL: null,
-          });
-          userName.value = null;
-          userEmail.value = null;
+          // store.commit("setUserData", {
+          //   uid: null,
+          //   name: null,
+          //   email: null,
+          //   photoURL: null,
+          // });
         }
       });
     };
@@ -232,8 +228,6 @@ export default {
       link,
       leftDrawerOpen,
       essentialLinks,
-      userName,
-      userEmail,
       logoutDialog,
       firstName,
       lastName,
@@ -277,7 +271,9 @@ export default {
   background: #8cc26b;
 }
 .q-drawer__content,
-.q-drawer__backdrop, .q-dialog__backdrop  {
+.q-drawer__backdrop,
+.q-dialog__backdrop,
+.q-loading__backdrop {
   backdrop-filter: blur(2px);
 }
 .top-left-btn {

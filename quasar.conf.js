@@ -24,7 +24,6 @@ module.exports = configure(function (ctx) {
     boot: [
       'axios',
       'firebase',
-      'vue-chat',
     ],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
@@ -86,7 +85,9 @@ module.exports = configure(function (ctx) {
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework
     framework: {
-      config: {},
+      config: {
+          loading: { /* look at QuasarConfOptions from the API card */ }
+      },
 
       // iconSet: 'material-icons', // Quasar icon set
       // lang: 'en-US', // Quasar language pack
@@ -103,6 +104,7 @@ module.exports = configure(function (ctx) {
         'Notify',
         'Dialog',
         'LocalStorage',
+        'Loading',
       ]
     },
 
