@@ -96,7 +96,7 @@ export default {
   setup(props, { emit }) {
     const $q = useQuasar();
     const store = useStore();
-    const $router = useRouter()
+    const $router = useRouter();
 
     const dialog = ref(null);
     const newProfilePic = ref("");
@@ -159,13 +159,20 @@ export default {
           message: "Uploading your image... 😎",
           boxClass: "bg-grey-2 text-grey-9",
         });
-
         api
           .post("/user/uploadProfilePic", formData)
           .then((res) => {
             console.log(res);
-            store.commit("addPhotoUrlParams",{});
-            // $router.push('/profile')
+            //check if first time uploading profile pic
+            if (!user.value.customProfilePic) {
+              console.log("new user");
+              store.commit("setCustomPhotoURL", {
+                newCustomProfilePic: true,
+                user: user,
+              });
+              // store.dispatch("getUserData", user);
+            }
+            store.commit("addPhotoUrlParams", {});
             // store.dispatch('getUserData', user);
             $q.loading.hide();
 

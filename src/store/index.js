@@ -47,7 +47,11 @@ export default store(function (/* { ssrContext } */) {
         state.userData = payload
         localStorage.setItem('userData', JSON.stringify(state.userData))
       },
-
+      setCustomPhotoURL(state, payload) {
+        //gets called when user uploads a profile photo for the first
+        state.userData.customProfilePic = payload.newCustomPhotoURL
+        state.userData.photoURL = prefix + '/user/getPhotoURL/' + state.userData.uid
+      },
       addPhotoUrlParams(state, payload) {
         //force reload <img/> by adding params to src
         state.userData.photoURL += '?'
@@ -74,23 +78,10 @@ export default store(function (/* { ssrContext } */) {
 
     },
     actions: {
-      getUserData({ commit }, user) {
-        //gets the userInfo from API and replace default photoURL if custom 
-        //is present and store it in the state
-        api.post('/user/getUser',
-          // .post('http://localhost:4000/user/getUser',
-          { uid: user.uid }).then(res => {
-            console.log(res.data)
-            //set custom profile pic if exists
-            if (res.data.customProfilePic) {
-              // console.log(res.data.photoURL)
-              res.data.photoURL = prefix + '/user/getPhotoURL/' + res.data.uid
-              res.data.photoURL = 'http://localhost:4000/user/getPhotoURL/' + res.data.uid
-              // console.log(res.data.photoURL)
-            }
-            commit('setUserData', res.data)
-          })
-          .catch(err => console.log('error in updateUserData', err))
+      getUserData({ commit, state }, user) {
+        if (state.userData.customProfilePic)
+          state.userData.photoURL = prefix + '/user/getPhotoURL/' + state.userData.uid
+        commit('setUserData', res.data)
       },
       updateTypingUsers({ commit }, payload) {
         if (payload.typing == true) {
