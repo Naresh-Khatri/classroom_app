@@ -2,8 +2,19 @@
   <q-dialog ref="dialog" @hide="onDialogHide">
     <q-card class="q-dialog-plugin">
       <q-card-section>
-        <!-- <q-img :src="user.photoURL" /> -->
-        <!-- <q-btn icon="upload" flat @click="uploadProfilePic" /> -->
+        <div class="text-h5 text-bold q-mb-md">Edit Profile</div>
+        <q-card-actions align="right">
+          <!-- <q-btn flat color="black" icon="upload" @click="uploadProfilePic" /> -->
+          <q-btn
+            color="primary"
+            icon="upload"
+            label="upload"
+            @click="uploadProfilePic"
+          />
+          <q-btn color="primary" label="Cancel" @click="onCancelClick" />
+        </q-card-actions>
+      </q-card-section>
+      <q-card-section>
         <div class="flex flex-center" v-if="newProfilePic == ''">
           <input
             style="opacity: 0; position: absolute; height: 0.1px; width: 0.1px"
@@ -21,7 +32,7 @@
               align-items: center;
               justify-content: center;
               position: relative;
-              height: 200px;
+              height: 150px;
               width: 100%;
               border: 2px dashed black;
             "
@@ -58,16 +69,17 @@
         >
         </cropper>
       </q-card-section>
-      <q-card-actions align="right">
-        <!-- <q-btn flat color="black" icon="upload" @click="uploadProfilePic" /> -->
-        <q-btn
-          color="primary"
-          icon="upload"
-          label="upload"
-          @click="uploadProfilePic"
+      <q-card-section>
+        <q-input
+          v-for="(fieldName, index) in Object.keys(extraProfileInfo)"
+          :key="index"
+          :readonly="fieldName == 'collegeName' || fieldName == 'collegeId'"
+          outlined
+          class="q-mb-sm"
+          :label="fieldName"
+          v-model="extraProfileInfo[fieldName]"
         />
-        <q-btn color="primary" label="Cancel" @click="onCancelClick" />
-      </q-card-actions>
+      </q-card-section>
     </q-card>
   </q-dialog>
 </template>
@@ -102,6 +114,15 @@ export default {
     const newProfilePic = ref("");
     const imgName = ref("");
     const cropper = ref(null);
+    const extraProfileInfo = ref({
+      collegeName: "KV Subba Reddy Inst of Technology",
+      collegeId: "KVSRIT",
+      collegeBranch: "",
+      collegeYear: "",
+      collegeSem: "",
+      collegeSec: "",
+      collegeRollNo: "",
+    });
     const result = ref({
       image: "",
       coordinates: {
@@ -119,6 +140,36 @@ export default {
     const onChange = (e) => {
       result.value = { image: e.image, coordinates: e.coordinates };
     };
+    const compressImg = (imgFile, MAX_WIDTH, MAX_HEIGHT, compressionRatio) => {
+      return new Promise((resolve, reject) => {
+        const canvas = document.createElement("canvas");
+        const image = new Image();
+        image.src = imgFile;
+        image.onload = () => {
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(image, 0, 0);
+          let width = image.width;
+          let height = image.height;
+
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height;
+              height = MAX_HEIGHT;
+            }
+          }
+          canvas.width = width;
+          canvas.height = height;
+          ctx.drawImage(image, 0, 0, width, height);
+          const dataUrl = canvas.toDataURL("image/jpeg", compressionRatio);
+          resolve(dataUrl);
+        };
+      });
+    };
     const onFileChange = (e) => {
       console.log("load started");
 
@@ -131,10 +182,13 @@ export default {
       imgName.value = e.target.files[0].name;
       const reader = new FileReader();
       reader.readAsDataURL(e.target.files[0]);
+      console.log("load started");
 
-      reader.onload = (e) => {
-        newProfilePic.value = e.target.result;
-        // console.log("load complete");
+      reader.onload = async (e) => {
+        //create a canvas to resize the image
+        const dataUrl = await compressImg(e.target.result, 1200, 1200, 1);
+
+        newProfilePic.value = dataUrl;
         $q.loading.hide();
       };
     };
@@ -147,38 +201,39 @@ export default {
     const uploadProfilePic = () => {
       const { canvas } = cropper.value.getResult();
       // console.log(canvas);
-      canvas.toBlob((blob) => {
+      canvas.toBlob(async (blob) => {
+        console.log("blob", (blob.size / 1048576).toFixed(2) + " MB");
         const formData = new FormData();
         formData.append("uid", user.value.uid);
         formData.append("imgName", imgName.value);
         formData.append("profilePic", blob);
         // formData.append("mul")
         // console.log("sendin", formData);
+
         $q.loading.show({
           delay: 400, // ms
           message: "Uploading your image... 😎",
           boxClass: "bg-grey-2 text-grey-9",
         });
-        api
-          .post("/user/uploadProfilePic", formData)
-          .then((res) => {
-            console.log(res);
-            //check if first time uploading profile pic
-            if (!user.value.customProfilePic) {
-              console.log("new user");
-              store.commit("setCustomPhotoURL", {
-                newCustomProfilePic: true,
-                user: user,
-              });
-              // store.dispatch("getUserData", user);
-            }
-            store.commit("addPhotoUrlParams", {});
-            // store.dispatch('getUserData', user);
-            $q.loading.hide();
-
-            hide();
-          })
-          .catch((err) => console.log(err));
+        try {
+          const res = await api.post("/user/uploadProfilePic", formData);
+          console.log(res);
+          //check if first time uploading profile pic
+          if (!user.value.customProfilePic) {
+            console.log("new user");
+            store.commit("setCustomPhotoURL", {
+              newCustomProfilePic: true,
+              user: user,
+            });
+            // store.dispatch("getUserData", user);
+          }
+          store.commit("addPhotoUrlParams", {});
+          // store.dispatch('getUserData', user);
+          $q.loading.hide();
+          hide();
+        } catch (err) {
+          console.log(err);
+        }
       });
     };
 
@@ -200,6 +255,7 @@ export default {
       show,
       hide,
       user,
+      extraProfileInfo,
       dialog,
       onDialogHide,
       onOKClick,
