@@ -33,6 +33,7 @@
                 color="black"
                 style="background: white"
               />
+              
             </div>
           </div>
         </div>
@@ -70,6 +71,10 @@ export default {
       type: String,
       default: "",
     },
+    btnIcon: {
+      type: String,
+      default: "",
+    },
     link: {
       type: String,
     },
@@ -83,5 +88,11 @@ export default {
 <style>
 a {
   text-decoration: none;
+}
+.card {
+  height: 150px;
+  color: #fff;
+  padding: 20px;
+  border-radius: 25px;
 }
 </style>
