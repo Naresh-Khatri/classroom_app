@@ -103,7 +103,8 @@
           <q-toolbar-title>
             <q-tabs v-model="tab" class="bg-primary bottom-nav">
               <q-route-tab to="/" icon="fas fa-home" />
-              <q-route-tab to="/games" icon="fas fa-book-open" />
+              <q-route-tab to="/materials" icon="fas fa-book-open" />
+              <q-route-tab to="/games" icon="fas fa-gamepad" />
               <q-route-tab to="/forum" icon="fas fa-comments" />
               <q-route-tab to="/profile" icon="fas fa-user" />
             </q-tabs>
