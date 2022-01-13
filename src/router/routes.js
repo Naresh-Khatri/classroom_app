@@ -9,7 +9,7 @@ const routes = [
         }
       },
       {
-        path: 'materials', component: () => import('pages/materials.vue'), name: "Materials", meta: {
+        path: 'materialsold', component: () => import('src/pages/materialsold.vue'), name: "Materials", meta: {
           showMenu: true, statusBarStyle: { color: '#5455e5' }
         }
       },
@@ -44,6 +44,11 @@ const routes = [
         }
       },
       {
+        path: 'materials', component: () => import('src/pages/Materials.vue'), name: "Materials", meta: {
+          showMenu: true, statusBarStyle: { color: '#5455e5' }
+        }
+      },
+      {
         path: 'login', component: () => import('pages/login.vue'), name: "Log in",
         meta: {
           showMenu: false, statusBarStyle: { color: '#5455e5' }
@@ -67,14 +72,25 @@ const routes = [
           showMenu: false, statusBarStyle: { color: '#5455e5' }
         }
       },
-
+      {
+        path: 'attendance', component: () => import('pages/admin/TakeAttendance.vue'), name: "TakeAttendance",
+        meta: {
+          showMenu: false, statusBarStyle: { color: '#5455e5' }
+        }
+      },
       {
         path: 'games', component: () => import('pages/Games.vue'), name: "Games",
         meta: {
           showMenu: false, statusBarStyle: { color: '#5455e5' }
         }
-      },      {
+      }, {
         path: 'arithmetic-game', component: () => import('pages/games/Arithmetic.vue'), name: "Arithmetic",
+        meta: {
+          showMenu: false, statusBarStyle: { color: '#5455e5' }
+        }
+      },
+      {
+        path: 'view-material', component: () => import('pages/MaterialViewer.vue'), name: "MaterialViewer",
         meta: {
           showMenu: false, statusBarStyle: { color: '#5455e5' }
         }
