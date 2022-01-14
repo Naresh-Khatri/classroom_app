@@ -19,6 +19,7 @@
     "firebase": "^9.6.1",
     "moment": "^2.29.1",
     "quasar": "^2.0.0",
+    "sharp": "^0.29.3",
     "socket.io-client": "^4.4.0",
     "vue-advanced-cropper": "^2.7.1",
     "vue-beautiful-chat": "^2.5.0",

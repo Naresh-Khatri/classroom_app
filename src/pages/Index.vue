@@ -7,6 +7,10 @@
         <!-- <div class='text-black'>home</div> -->
         <Home />
       </q-tab-panel>
+      <q-tab-panel name="materials" class="q-pa-xm" style="padding: 0px">
+        <!-- <div class='text-black'>home</div> -->
+        <Materials />
+      </q-tab-panel>
       <q-tab-panel name="games" class="q-pa-xm" style="padding: 0px">
         <!-- <div class='text-black'>home</div> -->
         <Games />
@@ -45,9 +49,10 @@ import Home from "./Home.vue";
 import Profile from "./Profile.vue";
 import Forum from "./Forum.vue";
 import Games from "./Games.vue";
+import Materials from "./Materials.vue";
 
 export default {
-  components: { Home, Profile, Forum, Games },
+  components: { Home, Profile, Forum, Games, Materials },
   setup(props) {
     const store = useStore();
     // const tab = ref(store.state.tab);

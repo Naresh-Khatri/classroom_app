@@ -112,10 +112,4 @@ export default {
 </script>
 
 <style>
-.card {
-  height: 150px;
-  color: #fff;
-  padding: 20px;
-  border-radius: 25px;
-}
 </style>

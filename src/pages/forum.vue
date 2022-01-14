@@ -103,7 +103,10 @@
             :data-id="index"
             :sent="isOwner(msg.user)"
             class="q-mx-sm text-white"
-            :avatar="msg.photoURL || 'https://cdn.quasar.dev/img/avatar1.jpg'"
+            :avatar="
+              getMsgPhotoURL(msg.user) ||
+              'https://cdn.quasar.dev/img/avatar1.jpg'
+            "
             :name="
               getMsgsData[index - 1].user != msg.user ||
               getDate(msg.timestamp) !=
@@ -181,7 +184,7 @@ import io from "socket.io-client";
 import { useStore } from "vuex";
 import { ref, computed, onMounted } from "vue";
 
-import {prefixWs } from '../apiConfig'
+import { prefix, prefixWs } from "../apiConfig";
 
 export default {
   setup() {
@@ -214,7 +217,7 @@ export default {
         // store.commit("updateSocket", socket.value);
       });
       socket.value.on("receivePrevMsgsData", (data) => {
-        // console.log(data);
+        console.log(data);
         store.commit("updateMsgsData", data);
         setTimeout(() => {
           scrollBottom();
@@ -225,6 +228,7 @@ export default {
         scrollBottom();
       });
       socket.value.on("receiveMsg", (data) => {
+        store.dispatch("updateTypingUsers", { uid: data.user, typing: false });
         console.log(data);
         store.commit("appendNewMsgData", data);
         unreadChatCount.value++;
@@ -262,6 +266,9 @@ export default {
     };
     const isOwner = (uid) => {
       return uid == getUserId.value;
+    };
+    const getMsgPhotoURL = (uid) => {
+      return prefix + "/user/photoURL/" + uid;
     };
     const sendMsg = () => {
       canShowTopDate.value = !canShowTopDate.value;
@@ -412,6 +419,7 @@ export default {
     };
     return {
       msgText,
+      getMsgPhotoURL,
       typing,
       debounceSendMsg,
       getTypingUsers,

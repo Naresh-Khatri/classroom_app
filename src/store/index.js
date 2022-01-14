@@ -43,14 +43,14 @@ export default store(function (/* { ssrContext } */) {
         state.userData.status = status
       },
       setUserData(state, payload) {
-        console.log('setUserData', payload)
+        // console.log('setUserData', payload)
         state.userData = payload
         localStorage.setItem('userData', JSON.stringify(state.userData))
       },
       setCustomPhotoURL(state, payload) {
         //gets called when user uploads a profile photo for the first
         state.userData.customProfilePic = payload.newCustomPhotoURL
-        state.userData.photoURL = prefix + '/user/getPhotoURL/' + state.userData.uid
+        state.userData.photoURL = prefix + '/user/photoURL/' + state.userData.uid
       },
       addPhotoUrlParams(state, payload) {
         //force reload <img/> by adding params to src
@@ -74,16 +74,23 @@ export default store(function (/* { ssrContext } */) {
       },
       removeFromTypingUsers(state, payload) {
         state.typingUsers = state.typingUsers.filter(user => user.id != payload.id)
+      },
+      setMaterials(state, payload) {
+        state.materials = payload
       }
-
     },
     actions: {
       getUserData({ commit, state }, user) {
-        if (state.userData.customProfilePic)
-          state.userData.photoURL = prefix + '/user/getPhotoURL/' + state.userData.uid
-        commit('setUserData', res.data)
+        //to get extra user data from my db
+        api.post('/user/userData', { uid: user.uid })
+          .then(res => {
+            if (res.data.customProfilePic)
+              res.data.photoURL = prefix + '/user/photoURL/' + res.data.uid
+            commit('setUserData', res.data)
+          })
       },
       updateTypingUsers({ commit }, payload) {
+        console.log("updateTypingUsers", payload);
         if (payload.typing == true) {
           commit('addToTypingUsers', payload)
           //timeout to remove user from typingUsers
@@ -94,6 +101,16 @@ export default store(function (/* { ssrContext } */) {
         else
           commit('removeFromTypingUsers', payload)
       },
+      getMaterials({ commit }, classroomID) {
+        api.get('/upload/materials/' + classroomID)
+          .then(res => {
+            commit('setMaterials', res.data)
+            // console.log(res.data)
+          })
+          .catch(err => {
+            console.log('couldnt get the materials', err)
+          })
+      }
     },
     modules: {
       // example

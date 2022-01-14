@@ -35,3 +35,13 @@ add a proxy in package.json
 ✅add a api config file
 progress bar while uploading image
 polish profile pic upload component
+
+9/1/2022
+
+
+
+10/1/2022
+
+✅remove typing user when user sent a message
+edit additional profile info
+active users count in forum

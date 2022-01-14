@@ -3,7 +3,7 @@
     <div class="row" style="margin-top: 100px">
       <div class="col-3">
         <div>
-          <img
+          <q-img
             class="shadow-10"
             :src="user.photoURL"
             style="border-radius: 50%; width: 100%"
@@ -169,13 +169,12 @@ export default {
 
     const user = computed(() => store.state.userData);
     // const photoURL = computed(()=> store.state.userData.photoURL);
-    console.log(user.value.photoURL);
     // const photoURL = ref("");
-    // photoURL.value = "http://localhost:4000/user/getPhotoURL/ipZVQgDR5Wdixl5EfR48I6rPtkG3" 
+    // photoURL.value = "http://localhost:4000/user/getPhotoURL/ipZVQgDR5Wdixl5EfR48I6rPtkG3"
     // photoURL.value = computed(() =>
-      // store.state.userData.customProfilePic
-      //   ? "http://localhost:4000/user/getPhotoURL/ipZVQgDR5Wdixl5EfR48I6rPtkG3" 
-      //   : store.state.userData.photoURL
+    // store.state.userData.customProfilePic
+    //   ? "http://localhost:4000/user/getPhotoURL/ipZVQgDR5Wdixl5EfR48I6rPtkG3"
+    //   : store.state.userData.photoURL
     // );
 
     const getRandomInterests = computed(() => {
@@ -191,11 +190,13 @@ export default {
     const sgpa = ref(0);
     onMounted(async () => {
       // setInterval(() => {
-        // photoURL.value += "?";
-        // console.log("updating profile pic", photoURL.value);
+      // photoURL.value += "?";
+      // console.log("updating profile pic", photoURL.value);
       // }, 1000);
       try {
-        editProfile();
+        setTimeout(() => {
+          editProfile();
+        }, 0);
         // const res = await axios.get(
         //   "https://jntua.plasmatch.in/singleResultv2/19fh1a0546/R19/B.TECH/II/II"
         // );
@@ -208,6 +209,7 @@ export default {
     const setActiveStatus = (id) => {
       console.log("setting");
       activeStatus.value = id;
+      store.commit("setUserStatus", id);
       api
         .post("/user/changeStatus", {
           status: id,
@@ -215,7 +217,6 @@ export default {
         })
         .then(function (response) {
           console.log(response);
-          store.commit("setUserStatus", id);
         })
         .catch(function (error) {
           console.log(error);

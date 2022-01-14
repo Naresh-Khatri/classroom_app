@@ -1,130 +1,88 @@
 <template>
-  <q-page padding class="text-white" >
-    <!-- content -->
-    <!-- <q-btn label="Maximized" color="primary" @click="dialog = true" /> -->
-    <div v-for="(course, index) in courses" :key="index">
-      <q-item clickable v-ripple @click="showMaterials(index)">
-        <q-item-section avatar>
-          <q-avatar
-            color="primary"
-            text-color="white"
-            size="xl"
-            :icon="course.icon"
-          >
-            <!-- {{ course.name }} -->
-          </q-avatar>
-        </q-item-section>
-        <q-item-section
-          ><span style="font-size:18px">{{
-            course.fullName
-          }}</span></q-item-section
-        >
-      </q-item>
-      <q-separator />
+  <q-page padding class="f lex flex -center">
+    <div>
+      <!-- input for a pdf document -->
+      <input
+        ref="fileInputEl"
+        type="file"
+        accept="application/pdf,application/vnd.ms-excel"
+        @change="onFileChange"
+      />
+      <q-btn label="Upload" @click="uploadFile" />
     </div>
-
-    <q-dialog
-      v-model="dialog"
-      persistent
-      :maximized="maximizedToggle"
-      transition-show="slide-up"
-      transition-hide="slide-down"
-    >
-      <q-card class="bg-primary text-white">
-        <q-bar>
-          <q-space />
-
-          <q-btn
-            dense
-            flat
-            icon="minimize"
-            @click="maximizedToggle = false"
-            :disable="!maximizedToggle"
-          >
-            <q-tooltip
-              v-if="maximizedToggle"
-              content-class="bg-white text-primary"
-              >Minimize</q-tooltip
-            >
-          </q-btn>
-          <q-btn
-            dense
-            flat
-            icon="crop_square"
-            @click="maximizedToggle = true"
-            :disable="maximizedToggle"
-          >
-            <q-tooltip
-              v-if="!maximizedToggle"
-              content-class="bg-white text-primary"
-              >Maximize</q-tooltip
-            >
-          </q-btn>
-          <q-btn dense flat icon="close" v-close-popup>
-            <q-tooltip content-class="bg-white text-primary">Close</q-tooltip>
-          </q-btn>
-        </q-bar>
-
-        <q-card-section>
-          <div class="text-h6">
-            Materials for {{ courses[selectedIndex].fullName }}
-          </div>
-        </q-card-section>
-
-        <q-card-section class="q-pt-none">
-          <!-- <a
-            href="https://drive.google.com/open?id=1lxfvUgsglrZHiJRXL2_BnEOQV6k9lcdF&authuser=0"
-            >DOWNLOAD</a
-          > -->
-          <q-item
-            clickable
-            v-ripple
-            v-for="(linkinfo, index) in courses[selectedIndex].linksinfo"
-            :key="index"
-          >
-            <q-item-section>
-              <a :href="linkinfo.link" style="text-decoration:none">
-                <q-btn
-                  align="center"
-                  style="width:100%;color:white"
-                  color='secondary'
-                  :label="linkinfo.name"
-                  icon="launch"
-                />
-              </a>
-              <!-- <q-item-label>{{linkinfo.link}}</q-item-label> -->
-              <q-separator dark />
-            </q-item-section>
-          </q-item>
-          <!-- Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum
-          repellendus sit voluptate voluptas eveniet porro. Rerum blanditiis
-          perferendis totam, ea at omnis vel numquam exercitationem aut, natus
-          minima, porro labore. -->
-        </q-card-section>
-      </q-card>
-    </q-dialog>
+    <q-card-section class="flex justify-center">
+      <div v-for="(material, i) in materials" :key="i">
+          <MaterialCard
+            :title="material.title"
+            :description="material.description"
+            :image="material.image"
+            :link="material.link"
+            fileType="PDF"
+            btnText="view"
+            btnIcons="download"
+            @click="getMaterial(material._id)"
+          />
+        <!-- <q-btn @click="getMaterial(material._id)" label="view" /> -->
+      </div>
+    </q-card-section>
   </q-page>
 </template>
 
-<script>
-import courses from "./courses";
+<script setup>
+import { ref, computed, onMounted } from "vue";
+import { useQuasar } from "quasar";
+import { useStore } from "vuex";
+import { api } from "boot/axios";
 
-export default {
-  data() {
-    return {
-      dialog: false,
-      maximizedToggle: true,
-      courses: courses,
-      selectedIndex: 0
-    };
-  },
-  methods: {
-    showMaterials(courseIndex) {
-      console.log(courseIndex);
-      this.selectedIndex = courseIndex;
-      this.dialog = true;
-      console.log(this.courses[this.selectedIndex]);
-    }
+import MaterialCard from "../components/MaterialCard.vue";
+
+const store = useStore();
+const $q = useQuasar();
+
+const user = computed(() => store.state.userData);
+
+const materials = computed(() => store.state.materials);
+
+onMounted(() => {
+  store.dispatch("getMaterials", "1234");
+});
+
+const fileInputEl = ref(null);
+const file = ref(null);
+
+const onFileChange = (e) => {
+  console.log(e.target.files);
+  if (e.target.files[0].size > 30_000_000) {
+    $q.dialog({
+      title: "File too large 😳",
+      message: "File size should be less than 30MB",
+    });
+    fileInputEl.value.value = "";
+    return;
   }
+  file.value = e.target.files[0];
+};
+const uploadFile = async () => {
+  const formData = new FormData();
+  formData.append("uid", user.value.uid);
+  formData.append("classroomID", "1234");
+  formData.append("title", "cse syllabus");
+  formData.append("description", "this is a pdf file, please download");
+  formData.append("subject", "Data Structures and Algorithms");
+
+  formData.append("fileName", file.value.name);
+  formData.append("file", file.value);
+  const res = await api.post("/upload/pdf", formData);
+  console.log(res);
+};
+
+const getMaterial = async (id) => {
+  const res = await api.get(`/upload/material/${id}`);
+  const a = document.createElement("a");
+  a.href = res.data.url;
+  a.download = res.data.name;
+  a.click();
+
+  console.log(res);
 };
 </script>
