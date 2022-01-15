@@ -95,9 +95,7 @@
 
     <q-page-container>
       <!-- <q-pull-to-refresh @refresh="refresh"> -->
-      <transition name="router-anim">
         <router-view />
-      </transition>
       <q-footer class="text-white" v-if="$route.name != 'Forum'">
         <q-toolbar style="padding: 0">
           <q-toolbar-title>
