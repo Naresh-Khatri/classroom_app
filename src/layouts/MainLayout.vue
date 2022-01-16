@@ -12,7 +12,8 @@
         icon="menu"
         aria-label="Menu"
         @click="leftDrawerOpen = !leftDrawerOpen"
-      /><q-btn
+      />
+      <q-btn
         v-else
         class="absolute"
         color="primary"
@@ -27,7 +28,7 @@
     </div>
     <!-- <q-toolbar-title class="text-bold">
           {{ $route.name }}
-        </q-toolbar-title> -->
+    </q-toolbar-title>-->
 
     <!-- <div>Quasar v</div> -->
 
@@ -46,24 +47,15 @@
           </router-link>
           <div v-if="!isLoggedIn">
             <div class="text-h6 text-white">Unknown user</div>
-            <q-btn
-              class="q-mr-sm"
-              color="secondary"
-              label="Sign up/login"
-              to="signup"
-            />
+            <q-btn class="q-mr-sm" color="secondary" label="Sign up/login" to="signup" />
             <!-- <q-btn color="secondary" label="login" to="login" /> -->
           </div>
           <div v-else>
             <div>
-              <span class="text-h4 text-white">{{ firstName }} </span>
-              <span class="text-h6 text-white"> {{ lastName }}</span>
+              <span class="text-h4 text-white">{{ firstName }}</span>
+              <span class="text-h6 text-white">{{ lastName }}</span>
             </div>
-            <q-btn
-              color="secondary"
-              label="Logout"
-              @click="logoutDialog = true"
-            />
+            <q-btn color="secondary" label="Logout" @click="logoutDialog = true" />
             <q-dialog v-model="logoutDialog" persistent>
               <q-card>
                 <q-card-section class="row items-center">
@@ -95,7 +87,7 @@
 
     <q-page-container>
       <!-- <q-pull-to-refresh @refresh="refresh"> -->
-        <router-view />
+      <router-view />
       <q-footer class="text-white" v-if="$route.name != 'Forum'">
         <q-toolbar style="padding: 0">
           <q-toolbar-title>
@@ -269,6 +261,7 @@ export default {
   color: white;
   background: #8cc26b;
 }
+
 .q-drawer__content,
 .q-drawer__backdrop,
 .q-dialog__backdrop,
