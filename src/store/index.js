@@ -90,7 +90,7 @@ export default store(function (/* { ssrContext } */) {
           })
       },
       updateTypingUsers({ commit }, payload) {
-        console.log("updateTypingUsers", payload);
+        // console.log("updateTypingUsers", payload);
         if (payload.typing == true) {
           commit('addToTypingUsers', payload)
           //timeout to remove user from typingUsers
@@ -102,7 +102,7 @@ export default store(function (/* { ssrContext } */) {
           commit('removeFromTypingUsers', payload)
       },
       getMaterials({ commit }, classroomID) {
-        api.get('/upload/materials/' + classroomID)
+        api.get('/uploads/materials/' + classroomID)
           .then(res => {
             commit('setMaterials', res.data)
             // console.log(res.data)
