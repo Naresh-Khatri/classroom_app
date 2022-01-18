@@ -1,6 +1,6 @@
 <template>
   <transition appear enter-active-class="animated  slideInUp" leave-active-class="animated fadeOut">
-    <div class="q-mr-md row inline card bg-dark shadow-15" style="width: 275px">
+    <div class="row inline card bg-dark shadow-15" style="width: 100%">
       <transition
         appear
         enter-active-class="animated backInRight"
@@ -44,9 +44,16 @@
           :duration="5000"
         >
           <q-icon key="1" class="z-index:10" name="fas fa-trash" @click="emitDelete" />
-          <q-img key="2" :src="image" width="75" />
+          <!-- <div class="text-blue">{{imgsrc}} </div> -->
+          <q-img key="2" class="q-mt-md preview-img" :src="prefix + '/' + image">
+            <q-icon
+              style="position:absolute; right:0; bottom:0"
+              name="far fa-file-pdf"
+              color="red"
+              size="lg"
+            />
+          </q-img>
         </transition-group>
-        <q-icon name="far fa-file-pdf" color="red" size="lg" />
         <!-- <q-chip :label="fileType" size="sm" color="red" text-color="white" /> -->
       </div>
     </div>
@@ -55,6 +62,7 @@
 
 <script setup>
 import { useQuasar } from 'quasar';
+import { prefix } from '../apiConfig.js'
 
 const $q = useQuasar();
 
@@ -87,6 +95,9 @@ const props = defineProps({
     default: "",
   }
 });
+console.log(prefix)
+console.log(props.image)
+const imgsrc = prefix + props.image
 
 const emit = defineEmits(["onDelete", "onPressed"])
 
@@ -133,6 +144,29 @@ a {
   color: #fff;
   padding: 20px;
   border-radius: 25px;
+}
+/* .vignette {
+  position: relative;
+  display: inline-block;
+}
+.vignette > img {
+  display: block;
+}
+.preview-img::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.5);
+
+  z-index: 10;
+} */
+.preview-img {
+  width: 100%;
+  border-radius: 15px;
+  box-shadow: inset 0 0 60px rgba(0, 0, 0, 1);
 }
 .line-clamp-3 {
   display: -webkit-box;
