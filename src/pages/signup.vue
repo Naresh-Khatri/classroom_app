@@ -1,9 +1,7 @@
 <template>
   <q-page padding class="bg-dak">
     <div class="q-my-xl">
-      <div class="text-grey text-center q-ma-sm">
-        Sign up with one of the option
-      </div>
+      <div class="text-grey text-center q-ma-sm">Sign up with one of the option</div>
       <div class="row text-white q-mb-lg">
         <div class="col flex flex-center">
           <q-btn color="primary" @click="googleLogin">
@@ -80,7 +78,7 @@
         to="login"
         >Log in</router-link
       >
-    </div> -->
+    </div>-->
   </q-page>
 </template>
 
@@ -167,7 +165,11 @@ export default {
       console.log(userInfo);
       try {
         const res = await api.post("/user/register", userInfo);
+        const uid = JSON.parse(res.config.data).uid
+        //store accepts userInfo with uid to search user in db
+        store.dispatch("getUserData", { uid });
         console.log(res);
+        console.log();
       } catch (err) {
         console.log(err);
       }
