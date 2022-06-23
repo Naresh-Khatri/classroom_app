@@ -155,12 +155,7 @@ export default {
       getAuth().onAuthStateChanged((user) => {
         if (user) {
           store.dispatch("getUserData", user);
-          // axios
-          //   // .post("http://localhost:4000/user/getUser", { uid: user.uid })
-          //   .post("/user/getUser", { uid: user.uid })
-          //   .then((res) => {
-          //     store.commit("setUserData", res.data);
-          //   });
+          console.log(user)
         } else {
           $q.dialog({
             title: "Login",
@@ -265,6 +260,7 @@ export default {
 .q-drawer__content,
 .q-drawer__backdrop,
 .q-dialog__backdrop,
+.q-loading__backdrop,
 .q-loading__backdrop {
   backdrop-filter: blur(2px);
 }

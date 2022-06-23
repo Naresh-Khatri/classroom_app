@@ -45,3 +45,15 @@ polish profile pic upload component
 ✅remove typing user when user sent a message
 edit additional profile info
 active users count in forum
+
+18/1/2022
+
+✅check if user logged in before sending a msg
+✅handle socket disconnect 
+✅reconnect socket
+✅weird glitch when new sign up, state updated only after a refresh
+send token when connecting to socket
+fix event duplication ( message queue concept )
+
+todo feature to stike off completed assignments, projects, records, 
+    observations etc

@@ -18,12 +18,13 @@
     "core-js": "^3.6.5",
     "firebase": "^9.6.1",
     "moment": "^2.29.1",
+    "pdfjs-dist": "^2.12.313",
     "quasar": "^2.0.0",
     "sharp": "^0.29.3",
     "socket.io-client": "^4.4.0",
     "vue-advanced-cropper": "^2.7.1",
-    "vue-beautiful-chat": "^2.5.0",
-    "vuex": "^4.0.1"
+    "vuex": "^4.0.1",
+    "worker-loader": "^3.0.8"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.13.14",

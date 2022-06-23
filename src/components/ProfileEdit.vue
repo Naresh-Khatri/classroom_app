@@ -5,12 +5,7 @@
         <div class="text-h5 text-bold q-mb-md">Edit Profile</div>
         <q-card-actions align="right">
           <!-- <q-btn flat color="black" icon="upload" @click="uploadProfilePic" /> -->
-          <q-btn
-            color="primary"
-            icon="upload"
-            label="upload"
-            @click="uploadProfilePic"
-          />
+          <q-btn color="primary" icon="upload" label="upload" @click="uploadProfilePic" />
           <q-btn color="primary" label="Cancel" @click="onCancelClick" />
         </q-card-actions>
       </q-card-section>
@@ -36,10 +31,9 @@
               width: 100%;
               border: 2px dashed black;
             "
-            ><q-icon name="fas fa-image" color="primary" size="xl" />
-            <p style="font-size: 20px" class="text-caption">
-              Upload a profile pic 😎👌
-            </p>
+          >
+            <q-icon name="fas fa-image" color="primary" size="xl" />
+            <p style="font-size: 20px" class="text-caption">Upload a profile pic 😎👌</p>
           </label>
         </div>
         <div
@@ -66,8 +60,7 @@
             aspectRatio: 1 / 1,
           }"
           @change="onChange"
-        >
-        </cropper>
+        ></cropper>
       </q-card-section>
       <q-card-section>
         <q-input
